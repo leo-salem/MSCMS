@@ -6,15 +6,18 @@
   <component name="ChangeListManager">
     <list default="true" id="98b33b49-cde2-4143-8723-4da10ac0bae4" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/medical-fitness-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/medical-fitness-service/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notification-messaging-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/notification-messaging-service/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/player-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/player-service/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/reports-analytics-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/reports-analytics-service/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training-match-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/training-match-service/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user-management-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/user-management-service/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notification-messaging-service/.gitattributes" beforeDir="false" afterPath="$PROJECT_DIR$/notification-mail-service/.gitattributes" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notification-messaging-service/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/notification-mail-service/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notification-messaging-service/.mvn/wrapper/maven-wrapper.properties" beforeDir="false" afterPath="$PROJECT_DIR$/notification-mail-service/.mvn/wrapper/maven-wrapper.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notification-messaging-service/mvnw" beforeDir="false" afterPath="$PROJECT_DIR$/notification-mail-service/mvnw" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notification-messaging-service/mvnw.cmd" beforeDir="false" afterPath="$PROJECT_DIR$/notification-mail-service/mvnw.cmd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notification-messaging-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/notification-mail-service/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notification-messaging-service/src/main/java/com/example/notificationmessagingservice/NotificationMessagingServiceApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/notification-mail-service/src/main/java/com/example/notificationmessagingservice/NotificationMessagingServiceApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notification-messaging-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/notification-mail-service/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notification-messaging-service/src/test/java/com/example/notificationmessagingservice/NotificationMessagingServiceApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/notification-mail-service/src/test/java/com/example/notificationmessagingservice/NotificationMessagingServiceApplicationTests.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,23 +66,30 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "EbrahemMordy"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;EbrahemMordy&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/tefaa1/MSCMS.git",
-    "accountId": "95f0486b-46fd-4f05-9b5f-d9b1cc3f0876"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/tefaa1/MSCMS.git&quot;,
+    &quot;accountId&quot;: &quot;95f0486b-46fd-4f05-9b5f-d9b1cc3f0876&quot;
   }
-}]]></component>
+}</component>
   <component name="KubernetesApiProvider">{
   &quot;isMigrated&quot;: true
 }</component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHomeTypeForPersistence" value="WRAPPER" />
+      </MavenGeneralSettings>
+    </option>
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 3
@@ -89,30 +99,30 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Maven.multi-sport-club-management [clean].executor": "Run",
-    "Maven.multi-sport-club-management [compile].executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "Spring Boot.UserManagementServiceApplication.executor": "Run",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "main",
-    "jdk.selected.JAVA_MODULE": "23",
-    "junie.onboarding.icon.badge.shown": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "E:/MSCMS",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "run.configurations.included.in.services": "true",
-    "to.speed.mode.migration.done": "true",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Maven.multi-sport-club-management [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.multi-sport-club-management [compile].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;Spring Boot.UserManagementServiceApplication.executor&quot;: &quot;Run&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;salem&quot;,
+    &quot;jdk.selected.JAVA_MODULE&quot;: &quot;23&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/PC/Desktop/MSCMS/user-management-service/pom.xml&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;run.configurations.included.in.services&quot;: &quot;true&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="com.example.playerservice.model.enums" />
@@ -147,7 +157,7 @@
       </method>
     </configuration>
     <configuration name="NotificationMessagingServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
-      <module name="notification-messaging-service" />
+      <module name="notification-mail-service" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.notificationmessagingservice.NotificationMessagingServiceApplication" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -185,8 +195,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.27397.103" />
-        <option value="bundled-js-predefined-d6986cc7102b-3aa1da707db6-JavaScript-IU-252.27397.103" />
+        <option value="bundled-jdk-9f38398b9061-39b83d9b5494-intellij.indexing.shared.core-IU-241.15989.150" />
+        <option value="bundled-js-predefined-1d06a55b98c1-91d5c284f522-JavaScript-IU-241.15989.150" />
       </set>
     </attachedChunks>
   </component>
@@ -201,6 +211,8 @@
       <workItem from="1764616216591" duration="1388000" />
       <workItem from="1764617615950" duration="1402000" />
       <workItem from="1764663183895" duration="18276000" />
+      <workItem from="1764719086214" duration="710000" />
+      <workItem from="1764719808248" duration="4000" />
     </task>
     <servers />
   </component>
