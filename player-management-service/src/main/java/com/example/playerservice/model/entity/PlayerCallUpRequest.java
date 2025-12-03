@@ -1,12 +1,18 @@
 package com.example.playerservice.model.entity;
 
-import com.example.playerservice.model.embeddable.NationalTeamRef;
-import com.example.playerservice.model.embeddable.PlayerRef;
 import com.example.playerservice.model.enums.RequestStatus;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "players-call-up-requests")
 public class PlayerCallUpRequest {
@@ -15,11 +21,9 @@ public class PlayerCallUpRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Embedded
-    private PlayerRef player;
+    private Long playerId;
 
-    @Embedded
-    private NationalTeamRef nationalTeam;
+    private Long NationalTeamId;
 
     @Enumerated(EnumType.STRING)
     private RequestStatus status;

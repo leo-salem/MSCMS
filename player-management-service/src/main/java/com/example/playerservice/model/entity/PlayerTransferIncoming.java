@@ -1,11 +1,18 @@
 package com.example.playerservice.model.entity;
 
-import com.example.playerservice.model.embeddable.PlayerRef;
 import com.example.playerservice.model.enums.RequestStatus;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "player_transfer_incoming")
 public class PlayerTransferIncoming {
@@ -14,8 +21,7 @@ public class PlayerTransferIncoming {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Embedded
-    private PlayerRef player;
+    private Long playerId;
 
     @ManyToOne
     @JoinColumn(name = "from_team_id")
