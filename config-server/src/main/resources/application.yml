@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: config-server
+  profiles:
+    active: native
+  cloud:
+    config:
+      server:
+        native:
+          search-locations: file:///C:\Users\PC\Desktop\MSCMS\config-server\src\main\resources\config
+server:
+  port: 8082
