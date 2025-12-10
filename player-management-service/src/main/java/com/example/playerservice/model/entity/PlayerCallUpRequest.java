@@ -23,7 +23,7 @@ public class PlayerCallUpRequest {
 
     private Long playerId;
 
-    private Long NationalTeamId;
+    private Long nationalTeamId;
 
     @Enumerated(EnumType.STRING)
     private RequestStatus status;
