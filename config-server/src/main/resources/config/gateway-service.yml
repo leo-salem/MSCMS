@@ -72,6 +72,8 @@ spring:
 springdoc:
   swagger-ui:
     urls:
+      - name: Gateway (Auth)
+        url: /v3/api-docs
       - name: User Management
         url: /user-management/v3/api-docs
       - name: Player Management
