@@ -3,6 +3,7 @@ package com.example.gateway_service.controller;
 import com.example.gateway_service.dto.*;
 import com.example.gateway_service.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -78,7 +79,7 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    @Operation(summary = "Logout", description = "Invalidate the session and clear the refresh_token cookie.")
+    @Operation(summary = "Logout", description = "Invalidate the session and clear the refresh_token cookie.", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<Map<String, Object>> logout(
             HttpServletRequest request,
             HttpServletResponse response) {
@@ -96,7 +97,7 @@ public class AuthController {
     }
 
     @PostMapping("/admin/create-user")
-    @Operation(summary = "Admin: Create user with role", description = "Create a new user with a specified role (ADMIN only)")
+    @Operation(summary = "Admin: Create user with role", description = "Create a new user with a specified role (ADMIN only)", security = @SecurityRequirement(name = "bearerAuth"))
     public ResponseEntity<Map<String, Object>> adminCreateUser(
             @Valid @RequestBody AdminCreateUserRequest request) {
         try {
