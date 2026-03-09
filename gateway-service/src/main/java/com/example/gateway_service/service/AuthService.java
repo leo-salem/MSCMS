@@ -132,9 +132,17 @@ public class AuthService {
 
     // ======================== ADMIN CREATE USER ========================
 
-    public Map<String, Object> adminCreateUser(AdminCreateUserRequest request, String authHeader) {
+    public Map<String, Object> adminCreateUser(AdminCreateUserRequest request) {
         // 1. Get admin token
         String adminToken = getAdminToken();
+
+        // Ensure token lifespan is 3600 (1 hour) - doing this once or on every admin
+        // action is safe
+        try {
+            updateTokenLifespan(adminToken, 3600);
+        } catch (Exception e) {
+            log.warn("Failed to update token lifespan, but proceeding with user creation: {}", e.getMessage());
+        }
 
         // 2. Create user in Keycloak
         String userId = createKeycloakUser(adminToken, request.getUsername(), request.getEmail(),
@@ -264,6 +272,68 @@ public class AuthService {
                 .toBodilessEntity();
 
         log.debug("Assigned realm role {} to user {}", roleName, userId);
+    }
+
+    private void updateTokenLifespan(String adminToken, int seconds) {
+        try {
+            // 1. Get client UUID (Keycloak uses a different internal UUID for admins than
+            // the 'clientId')
+            String clientsUrl = keycloakServerUrl + "/admin/realms/" + realm + "/clients?clientId=" + clientId;
+            List<Map<String, Object>> clients = restClient.get()
+                    .uri(clientsUrl)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminToken)
+                    .retrieve()
+                    .body(List.class);
+
+            if (clients == null || clients.isEmpty()) {
+                log.warn("Could not find client UUID for clientId: {}", clientId);
+                return;
+            }
+
+            String clientUuid = (String) clients.get(0).get("id");
+
+            // 2. Update the client setting
+            String updateUrl = keycloakServerUrl + "/admin/realms/" + realm + "/clients/" + clientUuid;
+
+            // We fetch the current client config first to avoid overwriting other settings
+            Map<String, Object> clientConfig = restClient.get()
+                    .uri(updateUrl)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminToken)
+                    .retrieve()
+                    .body(Map.class);
+
+            if (clientConfig == null)
+                return;
+
+            // Update the access token lifespan (standard Keycloak property)
+            clientConfig.put("attributes",
+                    mergeAttributes(clientConfig, "access.token.lifespan", String.valueOf(seconds)));
+
+            restClient.put()
+                    .uri(updateUrl)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminToken)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(clientConfig)
+                    .retrieve()
+                    .toBodilessEntity();
+
+            log.info("Successfully updated Keycloak client {} access token lifespan to {} seconds", clientId, seconds);
+
+        } catch (Exception e) {
+            log.error("Error updating Keycloak token lifespan: {}", e.getMessage());
+            throw new RuntimeException("Keycloak config error: " + e.getMessage());
+        }
+    }
+
+    private Map<String, String> mergeAttributes(Map<String, Object> config, String key, String value) {
+        Map<String, String> attributes = new HashMap<>();
+        Object existing = config.get("attributes");
+        if (existing instanceof Map) {
+            Map<?, ?> existingMap = (Map<?, ?>) existing;
+            existingMap.forEach((k, v) -> attributes.put(String.valueOf(k), String.valueOf(v)));
+        }
+        attributes.put(key, value);
+        return attributes;
     }
 
     private String buildForm(Map<String, String> params) {

@@ -98,10 +98,9 @@ public class AuthController {
     @PostMapping("/admin/create-user")
     @Operation(summary = "Admin: Create user with role", description = "Create a new user with a specified role (ADMIN only)")
     public ResponseEntity<Map<String, Object>> adminCreateUser(
-            @Valid @RequestBody AdminCreateUserRequest request,
-            @RequestHeader("Authorization") String authHeader) {
+            @Valid @RequestBody AdminCreateUserRequest request) {
         try {
-            Map<String, Object> result = authService.adminCreateUser(request, authHeader);
+            Map<String, Object> result = authService.adminCreateUser(request);
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
