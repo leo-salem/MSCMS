@@ -43,11 +43,7 @@ class MessageControllerTest {
                 "Test Subject",
                 "Test message content",
                 MessageStatus.SENT,
-                1L,
-                "Player",
-                "attachment1.pdf,attachment2.jpg",
-                null
-        );
+                null);
 
         messageResponse = new MessageResponse(
                 1L,
@@ -59,11 +55,7 @@ class MessageControllerTest {
                 LocalDateTime.now(),
                 null,
                 null,
-                1L,
-                "Player",
-                "attachment1.pdf,attachment2.jpg",
-                null
-        );
+                null);
     }
 
     @Test

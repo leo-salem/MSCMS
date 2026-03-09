@@ -23,8 +23,8 @@ public class Message {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String senderUserKeycloakId;  // Reference to User (Keycloak ID - Coach, Doctor, etc.)
-    private String recipientUserKeycloakId;  // Reference to User (Keycloak ID)
+    private String senderUserKeycloakId; // Reference to User (Keycloak ID - Coach, Doctor, etc.)
+    private String recipientUserKeycloakId; // Reference to User (Keycloak ID)
 
     private String subject;
     private String content;
@@ -36,16 +36,10 @@ public class Message {
     private LocalDateTime deliveredAt;
     private LocalDateTime readAt;
 
-    private Long relatedEntityId;  // Optional: related to injury, player, etc.
-    private String relatedEntityType;  // Optional: type of related entity
-
-    private String attachments;  // File references (stored externally)
-
     @OneToMany(mappedBy = "parentMessage", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Message> replies = new HashSet<>();
 
     @ManyToOne
     @JoinColumn(name = "parent_message_id")
-    private Message parentMessage;  // For message threads
+    private Message parentMessage; // For message threads
 }
-

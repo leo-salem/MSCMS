@@ -34,6 +34,11 @@ public class GatewaySecurityConfig {
 
                         .requestMatchers("/actuator/**", "/eureka/**").permitAll()
 
+                        // Auth endpoints
+                        .requestMatchers("/auth/login", "/auth/signup", "/auth/refresh").permitAll()
+                        .requestMatchers("/auth/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/auth/logout").authenticated()
+
                         // ADMIN-only
                         .requestMatchers(HttpMethod.POST, "/users/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/users/**").hasRole("ADMIN")

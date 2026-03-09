@@ -85,6 +85,14 @@ springdoc:
       - name: Reports & Analytics
         url: /reports-analytics/v3/api-docs
 
+keycloak:
+  auth:
+    server-url: http://keycloak:8080
+    realm: mscms
+    client-id: mscms-frontend
+    admin-username: admin
+    admin-password: admin
+
 eureka:
   client:
     serviceUrl:
