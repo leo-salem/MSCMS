@@ -1,5 +1,7 @@
 package com.example.gateway_service.security;
 
+import com.example.gateway_service.exception.CustomAuthErrorHandler;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -16,7 +18,10 @@ import java.util.Map;
 import java.util.Set;
 
 @Configuration
+@RequiredArgsConstructor
 public class GatewaySecurityConfig {
+
+    private final CustomAuthErrorHandler authErrorHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -71,7 +76,11 @@ public class GatewaySecurityConfig {
 
                         // any other endpoint → must be authenticated
                         .anyRequest().authenticated())
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthConverter)));
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthConverter))
+                        .authenticationEntryPoint(authErrorHandler))
+                .exceptionHandling(ex -> ex
+                        .accessDeniedHandler(authErrorHandler));
 
         return http.build();
     }
