@@ -14,8 +14,12 @@ RUN mvn clean package -DskipTests -B
 FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
 
+# Install curl for healthcheck
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
 # Copy the built jar from the build stage
-COPY --from=build /app/target/*.jar app.jar
+# Explicitly use the name from pom.xml to avoid wildcard issues
+COPY --from=build /app/target/eureka-server-*.jar app.jar
 
 # Run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
