@@ -51,38 +51,117 @@ public class GatewaySecurityConfig {
                         .requestMatchers("/auth/admin/**").hasRole("ADMIN")
                         .requestMatchers("/auth/logout").authenticated()
 
-                        // ADMIN-only
+                        // ADMIN-only (User Management)
                         .requestMatchers(HttpMethod.POST, "/users/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/users/**").hasRole("ADMIN")
                         .requestMatchers("/sport-managers/**").hasRole("ADMIN")
                         .requestMatchers("/team-managers/**").hasRole("ADMIN")
                         .requestMatchers("/staff/**").hasRole("ADMIN")
-                        .requestMatchers("/sponsors/**").hasRole("ADMIN")
-                        .requestMatchers("/national-teams/**").hasRole("ADMIN")
 
-                        // Sport Manager can manage team managers + view staff
+                        // Sport Manager
                         .requestMatchers("/sport-managers/{id}/team-managers/**").hasRole("SPORT_MANAGER")
                         .requestMatchers(HttpMethod.PUT, "/sport-managers/**").hasRole("SPORT_MANAGER")
                         .requestMatchers(HttpMethod.GET, "/staff/team/**").hasRole("SPORT_MANAGER")
 
+                        // Team Manager
                         .requestMatchers(HttpMethod.PUT, "/team-managers/{id}/assign-staff/**").hasRole("TEAM_MANAGER")
                         .requestMatchers(HttpMethod.GET, "/players/team/**").hasRole("TEAM_MANAGER")
 
+                        // Players - viewable by coaching/medical staff
                         .requestMatchers(HttpMethod.GET, "/players/**").hasAnyRole(
                                 "HEAD_COACH", "ASSISTANT_COACH", "SPECIFIC_COACH",
                                 "FITNESS_COACH", "PERFORMANCE_ANALYST", "TEAM_DOCTOR",
                                 "PHYSIOTHERAPIST")
 
+                        // ===== Medical & Fitness =====
+                        .requestMatchers("/injuries/**").hasAnyRole(
+                                "ADMIN", "TEAM_DOCTOR", "PHYSIOTHERAPIST", "HEAD_COACH")
+                        .requestMatchers("/diagnoses/**").hasAnyRole(
+                                "ADMIN", "TEAM_DOCTOR")
+                        .requestMatchers("/treatments/**").hasAnyRole(
+                                "ADMIN", "TEAM_DOCTOR", "PHYSIOTHERAPIST")
+                        .requestMatchers("/rehabilitations/**").hasAnyRole(
+                                "ADMIN", "TEAM_DOCTOR", "PHYSIOTHERAPIST")
+                        .requestMatchers("/recovery-programs/**").hasAnyRole(
+                                "ADMIN", "TEAM_DOCTOR", "PHYSIOTHERAPIST")
+                        .requestMatchers("/fitness-tests/**").hasAnyRole(
+                                "ADMIN", "TEAM_DOCTOR", "FITNESS_COACH")
+                        .requestMatchers("/training-loads/**").hasAnyRole(
+                                "ADMIN", "FITNESS_COACH", "HEAD_COACH", "PERFORMANCE_ANALYST")
+
+                        // ===== Training & Match =====
+                        .requestMatchers("/training-sessions/**").hasAnyRole(
+                                "ADMIN", "HEAD_COACH", "ASSISTANT_COACH", "SPECIFIC_COACH", "FITNESS_COACH")
+                        .requestMatchers("/training-plans/**").hasAnyRole(
+                                "ADMIN", "HEAD_COACH", "ASSISTANT_COACH")
+                        .requestMatchers("/training-drills/**").hasAnyRole(
+                                "ADMIN", "HEAD_COACH", "ASSISTANT_COACH", "SPECIFIC_COACH")
+                        .requestMatchers("/training-attendance/**").hasAnyRole(
+                                "ADMIN", "HEAD_COACH", "ASSISTANT_COACH")
+                        .requestMatchers("/player-training-assessments/**").hasAnyRole(
+                                "ADMIN", "HEAD_COACH", "ASSISTANT_COACH", "SPECIFIC_COACH", "FITNESS_COACH")
+                        .requestMatchers("/matches/**").hasAnyRole(
+                                "ADMIN", "HEAD_COACH", "ASSISTANT_COACH", "PERFORMANCE_ANALYST")
+                        .requestMatchers("/match-events/**").hasAnyRole(
+                                "ADMIN", "HEAD_COACH", "PERFORMANCE_ANALYST")
+                        .requestMatchers("/match-formations/**").hasAnyRole(
+                                "ADMIN", "HEAD_COACH")
+                        .requestMatchers("/match-lineups/**").hasAnyRole(
+                                "ADMIN", "HEAD_COACH")
+                        .requestMatchers("/match-performance-reviews/**").hasAnyRole(
+                                "ADMIN", "HEAD_COACH", "PERFORMANCE_ANALYST")
+                        .requestMatchers("/player-match-statistics/**").hasAnyRole(
+                                "ADMIN", "HEAD_COACH", "PERFORMANCE_ANALYST")
+
+                        // ===== Player Management =====
+                        .requestMatchers("/teams/**").hasAnyRole(
+                                "ADMIN", "SPORT_MANAGER", "TEAM_MANAGER", "HEAD_COACH")
+                        .requestMatchers("/sports/**").hasAnyRole(
+                                "ADMIN", "SPORT_MANAGER")
+                        .requestMatchers("/rosters/**").hasAnyRole(
+                                "ADMIN", "HEAD_COACH", "TEAM_MANAGER")
+                        .requestMatchers("/player-contracts/**").hasAnyRole(
+                                "ADMIN", "SPORT_MANAGER", "TEAM_MANAGER")
+                        .requestMatchers("/player-transfers-incoming/**").hasAnyRole(
+                                "ADMIN", "SPORT_MANAGER")
+                        .requestMatchers("/player-transfers-outgoing/**").hasAnyRole(
+                                "ADMIN", "SPORT_MANAGER")
+                        .requestMatchers("/player-callups/**").hasAnyRole(
+                                "ADMIN", "HEAD_COACH", "NATIONAL_TEAM")
+                        .requestMatchers("/outer-players/**").hasAnyRole(
+                                "ADMIN", "SCOUT")
+                        .requestMatchers("/outer-teams/**").hasAnyRole(
+                                "ADMIN", "SCOUT")
+
+                        // ===== Notification & Mail =====
+                        .requestMatchers("/notifications/**").authenticated()
+                        .requestMatchers("/alerts/**").hasAnyRole(
+                                "ADMIN", "HEAD_COACH", "TEAM_DOCTOR")
+                        .requestMatchers("/messages/**").authenticated()
+
+                        // ===== Reports & Analytics =====
+                        .requestMatchers("/match-analyses/**").hasAnyRole(
+                                "ADMIN", "HEAD_COACH", "PERFORMANCE_ANALYST")
+                        .requestMatchers("/player-analytics/**").hasAnyRole(
+                                "ADMIN", "HEAD_COACH", "PERFORMANCE_ANALYST", "SCOUT")
+                        .requestMatchers("/scout-reports/**").hasAnyRole(
+                                "ADMIN", "SCOUT")
+                        .requestMatchers("/sponsor-offers/**").hasAnyRole(
+                                "ADMIN", "SPONSOR")
+                        .requestMatchers("/team-analytics/**").hasAnyRole(
+                                "ADMIN", "HEAD_COACH", "PERFORMANCE_ANALYST")
+                        .requestMatchers("/training-analytics/**").hasAnyRole(
+                                "ADMIN", "HEAD_COACH", "FITNESS_COACH", "PERFORMANCE_ANALYST")
+
+                        // ===== Role-specific =====
                         .requestMatchers("/scouts/**").hasRole("SCOUT")
-
-                        .requestMatchers("/sponsors/**").hasRole("SPONSOR")
-
-                        .requestMatchers("/national-teams/**").hasRole("NATIONAL_TEAM")
-
+                        .requestMatchers("/sponsors/**").hasAnyRole("ADMIN", "SPONSOR")
+                        .requestMatchers("/national-teams/**").hasAnyRole("ADMIN", "NATIONAL_TEAM")
                         .requestMatchers("/fans/**").hasRole("FAN")
 
-                        // any other endpoint → must be authenticated
+                        // Fallback — deny unauthenticated
                         .anyRequest().authenticated())
+
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthConverter))
                         .authenticationEntryPoint(authErrorHandler))
