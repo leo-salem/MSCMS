@@ -10,16 +10,18 @@ RUN mvn dependency:go-offline -B
 COPY src ./src
 RUN mvn clean package -DskipTests -B
 
+# Rename the fat jar to a known name
+RUN find target -maxdepth 1 -name '*.jar' -not -name '*original*' | head -1 | xargs -I{} cp {} target/app.jar
+
 # Stage 2: Runtime
 FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
 
 # Install curl for healthcheck
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
 
-# Copy the built jar from the build stage
-# Explicitly use the name from pom.xml to avoid wildcard issues
-COPY --from=build /app/target/eureka-server-*.jar app.jar
+# Copy the renamed jar from the build stage
+COPY --from=build /app/target/app.jar app.jar
 
 # Run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
