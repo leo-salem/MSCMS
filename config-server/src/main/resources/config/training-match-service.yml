@@ -24,6 +24,14 @@ management:
     web:
       exposure:
         include: "*"
+
+springdoc:
+  servers:
+    - url: http://localhost:8080
+      description: API Gateway
+    - url: http://localhost:8087
+      description: Training & Match (direct)
+
 eureka:
   client:
     serviceUrl:

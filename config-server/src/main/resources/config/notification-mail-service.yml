@@ -37,6 +37,14 @@ management:
     web:
       exposure:
         include: "*"
+
+springdoc:
+  servers:
+    - url: http://localhost:8080
+      description: API Gateway
+    - url: http://localhost:8085
+      description: Notification & Mail (direct)
+
 eureka:
   client:
     serviceUrl:
