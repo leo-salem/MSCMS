@@ -365,6 +365,8 @@ Create `keycloak/mscms-realm.json` and paste this:
     {
       "username": "admin",
       "email": "admin@mscms.com",
+      "firstName": "Admin",
+      "lastName": "User",
       "enabled": true,
       "emailVerified": true,
       "credentials": [
