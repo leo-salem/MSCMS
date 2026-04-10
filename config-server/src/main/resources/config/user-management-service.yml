@@ -58,16 +58,16 @@ logging:
 
 app:
   admin:
-    keycloak-id: ${APP_ADMIN_KEYCLOAK_ID}
-    first-name: ${APP_ADMIN_FIRST_NAME}
-    last-name: ${APP_ADMIN_LAST_NAME}
-    username: ${APP_ADMIN_USERNAME}
-    email: ${APP_ADMIN_EMAIL}
-    password: ${APP_ADMIN_PASSWORD}
-    phone: ${APP_ADMIN_PHONE}
-    age: ${APP_ADMIN_AGE}
-    gender: ${APP_ADMIN_GENDER}
-    address: ${APP_ADMIN_ADDRESS}
-    blood-type: ${APP_ADMIN_BLOOD_TYPE}
-    role: ${APP_ADMIN_ROLE}
+    keycloak-id: ${APP_ADMIN_KEYCLOAK_ID:default-admin-id}
+    first-name: ${APP_ADMIN_FIRST_NAME:Admin}
+    last-name: ${APP_ADMIN_LAST_NAME:User}
+    username: ${APP_ADMIN_USERNAME:admin}
+    email: ${APP_ADMIN_EMAIL:admin@mscms.com}
+    password: ${APP_ADMIN_PASSWORD:admin123}
+    phone: ${APP_ADMIN_PHONE:0000000000}
+    age: ${APP_ADMIN_AGE:30}
+    gender: ${APP_ADMIN_GENDER:MALE}
+    address: ${APP_ADMIN_ADDRESS:System}
+    blood-type: ${APP_ADMIN_BLOOD_TYPE:O_POSITIVE}
+    role: ${APP_ADMIN_ROLE:ADMIN}
     create-default: ${APP_ADMIN_CREATE_DEFAULT:true}
