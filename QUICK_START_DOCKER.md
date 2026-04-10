@@ -39,9 +39,8 @@ services:
     environment:
       POSTGRES_USER: embarkx
       POSTGRES_PASSWORD: embarkx
-      POSTGRES_MULTIPLE_DATABASES: mscms_user,mscms_player,mscms_training,mscms_medical,mscms_notification,mscms_reports
     volumes:
-      - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5432:5432"
     healthcheck:
@@ -105,8 +104,7 @@ services:
     ports:
       - "8761:8761"
     healthcheck:
-      test:
-        ["CMD-SHELL", "curl -f http://localhost:8761/actuator/health || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://localhost:8761/actuator/health || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -122,8 +120,7 @@ services:
       eureka-server:
         condition: service_healthy
     healthcheck:
-      test:
-        ["CMD-SHELL", "curl -f http://localhost:8082/actuator/health || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://localhost:8082/actuator/health || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -281,26 +278,25 @@ networks:
 
 ---
 
-### File 2: `init-db.sh`
+### File 2: `init-db.sql`
 
-Create a file called `init-db.sh` and paste this:
+Create a file called `init-db.sql` and paste this:
 
-```bash
-#!/bin/bash
-set -e
+```sql
+CREATE DATABASE mscms_user;
+CREATE DATABASE mscms_player;
+CREATE DATABASE mscms_training;
+CREATE DATABASE mscms_medical;
+CREATE DATABASE mscms_notification;
+CREATE DATABASE mscms_reports;
 
-if [ -n "$POSTGRES_MULTIPLE_DATABASES" ]; then
-  for db in $(echo $POSTGRES_MULTIPLE_DATABASES | tr ',' ' '); do
-    echo "Creating database: $db"
-    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
-      CREATE DATABASE $db;
-      GRANT ALL PRIVILEGES ON DATABASE $db TO $POSTGRES_USER;
-EOSQL
-  done
-fi
+GRANT ALL PRIVILEGES ON DATABASE mscms_user TO embarkx;
+GRANT ALL PRIVILEGES ON DATABASE mscms_player TO embarkx;
+GRANT ALL PRIVILEGES ON DATABASE mscms_training TO embarkx;
+GRANT ALL PRIVILEGES ON DATABASE mscms_medical TO embarkx;
+GRANT ALL PRIVILEGES ON DATABASE mscms_notification TO embarkx;
+GRANT ALL PRIVILEGES ON DATABASE mscms_reports TO embarkx;
 ```
-
-> ⚠️ **Linux/macOS only:** Run `chmod +x init-db.sh` after creating the file.
 
 ---
 
@@ -386,6 +382,20 @@ Create `keycloak/mscms-realm.json` and paste this:
 
 ---
 
+## 📁 Final Folder Structure
+
+Your `mscms` folder should look like this:
+
+```
+mscms/
+├── docker-compose.yml
+├── init-db.sql
+└── keycloak/
+    └── mscms-realm.json
+```
+
+---
+
 ## 📥 Step 3: Pull the Docker Images
 
 ```bash
@@ -408,23 +418,21 @@ Wait **2–3 minutes** for all services to start and register with each other.
 
 ## ✅ Step 5: Verify It's Running
 
-| What                      | URL                                   | Notes                              |
-| :------------------------ | :------------------------------------ | :--------------------------------- |
-| **Eureka Dashboard**      | http://localhost:8761                 | All 7 services should show as `UP` |
-| **Swagger UI (API Docs)** | http://localhost:8080/swagger-ui.html | Interactive API testing            |
-| **Keycloak Admin**        | http://localhost:8443                 | User: `admin` / Pass: `admin`      |
+| What | URL | Notes |
+| :--- | :--- | :--- |
+| **Eureka Dashboard** | http://localhost:8761 | All 7 services should show as `UP` |
+| **Swagger UI (API Docs)** | http://localhost:8080/swagger-ui.html | Interactive API testing |
+| **Keycloak Admin** | http://localhost:8443 | User: `admin` / Pass: `admin` |
 
 ---
 
 ## 🔐 How to Authenticate
 
 ### Default Admin Account
-
 - **Username:** `admin`
 - **Password:** `admin123`
 
 ### Login (get JWT token)
-
 ```
 POST http://localhost:8080/auth/login
 Content-Type: application/json
@@ -434,11 +442,9 @@ Content-Type: application/json
   "password": "admin123"
 }
 ```
-
 The response will contain an `accessToken`. Use it in all subsequent requests.
 
 ### Signup (create a new user)
-
 ```
 POST http://localhost:8080/auth/signup
 Content-Type: application/json
@@ -452,13 +458,10 @@ Content-Type: application/json
   "role": "FAN"
 }
 ```
-
 Available roles: `ADMIN`, `SPORT_MANAGER`, `TEAM_MANAGER`, `FAN`, `SCOUT`, `SPONSOR`, `NATIONAL_TEAM`
 
 ### Using the Token
-
 Add this header to every request:
-
 ```
 Authorization: Bearer <YOUR_TOKEN_HERE>
 ```
@@ -469,21 +472,21 @@ Authorization: Bearer <YOUR_TOKEN_HERE>
 
 The API Gateway enforces role-based security. If a role doesn't have access, you get `403 Forbidden`.
 
-| Endpoints                                                                      | Allowed Roles                                                     |
-| :----------------------------------------------------------------------------- | :---------------------------------------------------------------- |
-| `/injuries/**`, `/diagnoses/**`, `/treatments/**`, `/recovery-programs/**`     | ADMIN, TEAM_DOCTOR, PHYSIOTHERAPIST, HEAD_COACH                   |
-| `/fitness-tests/**`                                                            | ADMIN, TEAM_DOCTOR, FITNESS_COACH                                 |
-| `/training-loads/**`                                                           | ADMIN, FITNESS_COACH, HEAD_COACH, PERFORMANCE_ANALYST             |
-| `/training-sessions/**`, `/training-plans/**`, `/training-drills/**`           | ADMIN, HEAD_COACH, ASSISTANT_COACH, SPECIFIC_COACH, FITNESS_COACH |
-| `/matches/**`, `/match-events/**`, `/match-formations/**`, `/match-lineups/**` | ADMIN, HEAD_COACH, PERFORMANCE_ANALYST                            |
-| `/teams/**`                                                                    | ADMIN, SPORT_MANAGER, TEAM_MANAGER, HEAD_COACH                    |
-| `/sports/**`                                                                   | ADMIN, SPORT_MANAGER                                              |
-| `/rosters/**`, `/player-contracts/**`                                          | ADMIN, HEAD_COACH, TEAM_MANAGER                                   |
-| `/players/**` (GET)                                                            | ADMIN, HEAD_COACH, ASSISTANT_COACH, TEAM_DOCTOR, PHYSIOTHERAPIST  |
-| `/scouts/**`, `/scout-reports/**`, `/outer-players/**`, `/outer-teams/**`      | ADMIN, SCOUT                                                      |
-| `/sponsors/**`, `/sponsor-offers/**`                                           | ADMIN, SPONSOR                                                    |
-| `/fans/**`                                                                     | ADMIN, FAN                                                        |
-| `/notifications/**`, `/messages/**`                                            | Any authenticated user                                            |
+| Endpoints | Allowed Roles |
+| :--- | :--- |
+| `/injuries/**`, `/diagnoses/**`, `/treatments/**`, `/recovery-programs/**` | ADMIN, TEAM_DOCTOR, PHYSIOTHERAPIST, HEAD_COACH |
+| `/fitness-tests/**` | ADMIN, TEAM_DOCTOR, FITNESS_COACH |
+| `/training-loads/**` | ADMIN, FITNESS_COACH, HEAD_COACH, PERFORMANCE_ANALYST |
+| `/training-sessions/**`, `/training-plans/**`, `/training-drills/**` | ADMIN, HEAD_COACH, ASSISTANT_COACH, SPECIFIC_COACH, FITNESS_COACH |
+| `/matches/**`, `/match-events/**`, `/match-formations/**`, `/match-lineups/**` | ADMIN, HEAD_COACH, PERFORMANCE_ANALYST |
+| `/teams/**` | ADMIN, SPORT_MANAGER, TEAM_MANAGER, HEAD_COACH |
+| `/sports/**` | ADMIN, SPORT_MANAGER |
+| `/rosters/**`, `/player-contracts/**` | ADMIN, HEAD_COACH, TEAM_MANAGER |
+| `/players/**` (GET) | ADMIN, HEAD_COACH, ASSISTANT_COACH, TEAM_DOCTOR, PHYSIOTHERAPIST |
+| `/scouts/**`, `/scout-reports/**`, `/outer-players/**`, `/outer-teams/**` | ADMIN, SCOUT |
+| `/sponsors/**`, `/sponsor-offers/**` | ADMIN, SPONSOR |
+| `/fans/**` | ADMIN, FAN |
+| `/notifications/**`, `/messages/**` | Any authenticated user |
 
 ---
 
@@ -513,8 +516,26 @@ docker compose logs -f gateway-service
 docker compose restart user-management-service
 
 # Pull latest images and restart
-docker compose pull && docker compose up -d
+docker compose pull
+docker compose up -d
 ```
+
+---
+
+## ⚠️ Troubleshooting
+
+### Only some services appear in Eureka?
+- Wait 2-3 more minutes — slower machines take longer.
+- Check logs: `docker compose logs -f user-management-service`
+- If a service keeps restarting, run `docker compose down -v` for a fresh start.
+
+### Login returns 401?
+- Make sure Eureka shows all services as `UP` first.
+- Use the correct credentials: `admin` / `admin123`.
+
+### Database errors?
+- Run `docker compose down -v` to wipe all data and start clean.
+- Then `docker compose up -d` again.
 
 ---
 
@@ -532,7 +553,7 @@ Browser/Frontend (React, Angular, etc.)
         ├── Medical & Fitness Service
         ├── Notification & Mail Service
         └── Reports & Analytics Service
-
+        
   Supporting Infrastructure:
   ├── Config Server (:8082) — centralized config
   ├── Eureka Server (:8761) — service discovery
