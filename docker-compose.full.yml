@@ -121,7 +121,7 @@ services:
       - DB_PASSWORD=embarkx
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
       - KEYCLOAK_USER=admin
-      - KEYCLOAK_PASSWORD=admin
+      - KEYCLOAK_PASSWORD=admin123
       - APP_ADMIN_KEYCLOAK_ID=default-admin-id
       - APP_ADMIN_FIRST_NAME=Admin
       - APP_ADMIN_LAST_NAME=User

@@ -7,7 +7,7 @@ spring:
     database: POSTGRESQL
     show-sql: true
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   kafka:
     bootstrap-servers: kafka:9092
@@ -34,8 +34,8 @@ springdoc:
 
 keycloak:
   admin:
-    username: ${KEYCLOAK_USER}
-    password: ${KEYCLOAK_PASSWORD}
+    username: ${KEYCLOAK_USER:admin}
+    password: ${KEYCLOAK_PASSWORD:admin123}
     server-url: http://keycloak:8080
     realm: mscms
     client-id: admin-cli

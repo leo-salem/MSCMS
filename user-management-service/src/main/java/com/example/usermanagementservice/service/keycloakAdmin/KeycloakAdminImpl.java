@@ -38,8 +38,13 @@ public class KeycloakAdminImpl implements KeycloakAdminService {
     @Value("${keycloak.admin.client-id}")
     private String clientId;
 
-    @Value("${keycloak.admin.client-uid}")
+    @Value("${keycloak.admin.client-uid:}")
     private String clientUid;
+
+    @Value("${keycloak.admin.managed-client-id:mscms-frontend}")
+    private String managedClientId;
+
+    private String resolvedClientUid;
 
     private final RestClient restClient = RestClient.create();
 
@@ -77,37 +82,27 @@ public class KeycloakAdminImpl implements KeycloakAdminService {
     @Override
     public String getAdminAccessToken() {
         try {
-            // Build form body String properly cause APPLICATION_FORM_URLENCODED
-            //doesn't accept map
             Map<String, String> params = new HashMap<>();
-            params.put("client_id", clientId);
+            params.put("client_id", "admin-cli"); // Standard admin client
             params.put("username", adminUsername);
             params.put("password", adminPassword);
             params.put("grant_type", "password");
 
             String formBody = buildFormUrlencodedBody(params);
+            
+            // Try to get token from the managed realm first, fallback to master if needed
             String url = keycloakServerUrl + "/realms/" + realm + "/protocol/openid-connect/token";
 
             log.debug("Attempting to get admin token from: {}", url);
 
-            Map<String, Object> response = restClient.post()
-                    .uri(url)
-                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                    .body(formBody)
-                    .retrieve()
-                    .onStatus(
-                            HttpStatusCode::is4xxClientError,
-                            (req, res) -> {
-                                log.error("Authentication failed with status: {}", res.getStatusCode());
-                                throwStatusError(res.getStatusCode(), "Authentication failed - check credentials");
-                            })
-                    .onStatus(
-                            HttpStatusCode::is5xxServerError,
-                            (req, res) -> {
-                                log.error("Keycloak server error: {}", res.getStatusCode());
-                                throwStatusError(res.getStatusCode(), "Keycloak server error");
-                            })
-                    .body(Map.class);
+            Map<String, Object> response;
+            try {
+                response = fetchToken(url, formBody);
+            } catch (Exception e) {
+                log.warn("Failed to get token from realm {}, trying master realm...", realm);
+                url = keycloakServerUrl + "/realms/master/protocol/openid-connect/token";
+                response = fetchToken(url, formBody);
+            }
 
             if (response == null || response.get("access_token") == null) {
                 throw new KeycloakInvalidResponseException("Keycloak did not return access token");
@@ -119,6 +114,51 @@ public class KeycloakAdminImpl implements KeycloakAdminService {
         } catch (RestClientException ex) {
             log.error("Failed to connect to Keycloak: {}", ex.getMessage(), ex);
             throw new KeycloakServerException("Cannot connect to Keycloak server: " + ex.getMessage());
+        }
+    }
+
+    private Map fetchToken(String url, String formBody) {
+        return restClient.post()
+                .uri(url)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .body(formBody)
+                .retrieve()
+                .onStatus(
+                        HttpStatusCode::is4xxClientError,
+                        (req, res) -> {
+                            log.error("Authentication failed with status: {} at {}", res.getStatusCode(), url);
+                            throwStatusError(res.getStatusCode(), "Authentication failed - check credentials");
+                        })
+                .body(Map.class);
+    }
+
+    private String getResolvedClientUid(String token) {
+        if (clientUid != null && !clientUid.isEmpty()) {
+            return clientUid;
+        }
+        if (resolvedClientUid != null) {
+            return resolvedClientUid;
+        }
+
+        String url = keycloakServerUrl + "/admin/realms/" + realm + "/clients?clientId=" + managedClientId;
+        
+        try {
+            List<Map<String, Object>> clients = restClient.get()
+                    .uri(url)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                    .retrieve()
+                    .body(List.class);
+
+            if (clients == null || clients.isEmpty()) {
+                throw new KeycloakNotFoundException("Could not find client UUID for: " + managedClientId);
+            }
+
+            resolvedClientUid = (String) clients.get(0).get("id");
+            log.info("Resolved client {} to UUID {}", managedClientId, resolvedClientUid);
+            return resolvedClientUid;
+        } catch (Exception e) {
+            log.error("Failed to resolve client UUID: {}", e.getMessage());
+            throw new KeycloakServerException("Failed to resolve client UUID: " + e.getMessage());
         }
     }
 
@@ -223,7 +263,7 @@ public class KeycloakAdminImpl implements KeycloakAdminService {
     @Override
     public Map<String, Object> getClientRoleRepresentation(String token, String roleName) {
         String url = keycloakServerUrl + "/admin/realms/" + realm
-                + "/clients/" + clientUid + "/roles/" + roleName;
+                + "/clients/" + getResolvedClientUid(token) + "/roles/" + roleName;
 
         try {
             log.debug("Fetching client role: {}", roleName);
@@ -260,7 +300,7 @@ public class KeycloakAdminImpl implements KeycloakAdminService {
         Map<String, Object> role = getClientRoleRepresentation(token, roleName);
 
         String url = keycloakServerUrl + "/admin/realms/" + realm
-                + "/users/" + userId + "/role-mappings/clients/" + clientUid;
+                + "/users/" + userId + "/role-mappings/clients/" + getResolvedClientUid(token);
 
         try {
             log.debug("Assigning client role {} to user {}", roleName, userId);

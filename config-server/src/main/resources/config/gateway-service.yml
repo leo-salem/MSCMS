@@ -93,7 +93,7 @@ keycloak:
     realm: mscms
     client-id: mscms-frontend
     admin-username: admin
-    admin-password: admin
+    admin-password: admin123
 
 eureka:
   client:

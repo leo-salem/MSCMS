@@ -155,7 +155,7 @@ services:
       - DB_PASSWORD=embarkx
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
       - KEYCLOAK_USER=admin
-      - KEYCLOAK_PASSWORD=admin
+      - KEYCLOAK_PASSWORD=admin123
       - APP_ADMIN_KEYCLOAK_ID=default-admin-id
       - APP_ADMIN_FIRST_NAME=Admin
       - APP_ADMIN_LAST_NAME=User
@@ -321,7 +321,7 @@ Create `keycloak/mscms-realm.json` and paste this:
   "resetPasswordAllowed": true,
   "editUsernameAllowed": false,
   "bruteForceProtected": false,
-  "accessTokenLifespan": 300,
+  "accessTokenLifespan": 604800,
   "ssoSessionIdleTimeout": 1800,
   "ssoSessionMaxLifespan": 36000,
   "roles": {
@@ -376,7 +376,16 @@ Create `keycloak/mscms-realm.json` and paste this:
           "temporary": false
         }
       ],
-      "realmRoles": ["ADMIN"]
+      "realmRoles": ["ADMIN"],
+      "clientRoles": {
+        "realm-management": [
+          "manage-users",
+          "query-users",
+          "query-groups",
+          "manage-clients",
+          "view-users"
+        ]
+      }
     }
   ]
 }

@@ -8,7 +8,7 @@
   "resetPasswordAllowed": true,
   "editUsernameAllowed": false,
   "bruteForceProtected": false,
-  "accessTokenLifespan": 300,
+  "accessTokenLifespan": 604800,
   "ssoSessionIdleTimeout": 1800,
   "ssoSessionMaxLifespan": 36000,
   "roles": {
@@ -75,7 +75,16 @@
           "temporary": false
         }
       ],
-      "realmRoles": ["ADMIN"]
+      "realmRoles": ["ADMIN"],
+      "clientRoles": {
+        "realm-management": [
+          "manage-users",
+          "query-users",
+          "query-groups",
+          "manage-clients",
+          "view-users"
+        ]
+      }
     },
     {
       "username": "coach",
