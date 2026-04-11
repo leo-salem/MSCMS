@@ -54,24 +54,19 @@ public class GatewaySecurityConfig {
                         // ADMIN-only (User Management)
                         .requestMatchers(HttpMethod.POST, "/users/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/users/**").hasRole("ADMIN")
-                        .requestMatchers("/sport-managers/**").hasRole("ADMIN")
-                        .requestMatchers("/team-managers/**").hasRole("ADMIN")
-                        .requestMatchers("/staff/**").hasRole("ADMIN")
+                        .requestMatchers("/sport-managers/**").hasAnyRole("ADMIN", "SPORT_MANAGER")
+                        .requestMatchers("/team-managers/**").hasAnyRole("ADMIN", "SPORT_MANAGER", "TEAM_MANAGER")
+                        .requestMatchers("/staff/**").hasAnyRole("ADMIN", "SPORT_MANAGER", "TEAM_MANAGER")
 
-                        // Sport Manager
-                        .requestMatchers("/sport-managers/{id}/team-managers/**").hasRole("SPORT_MANAGER")
-                        .requestMatchers(HttpMethod.PUT, "/sport-managers/**").hasRole("SPORT_MANAGER")
-                        .requestMatchers(HttpMethod.GET, "/staff/team/**").hasRole("SPORT_MANAGER")
-
-                        // Team Manager
-                        .requestMatchers(HttpMethod.PUT, "/team-managers/{id}/assign-staff/**").hasRole("TEAM_MANAGER")
-                        .requestMatchers(HttpMethod.GET, "/players/team/**").hasRole("TEAM_MANAGER")
-
-                        // Players - viewable by coaching/medical staff
+                        // Players - ADMIN + coaching/medical staff
+                        .requestMatchers(HttpMethod.POST, "/players/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/players/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/players/**").hasAnyRole(
-                                "HEAD_COACH", "ASSISTANT_COACH", "SPECIFIC_COACH",
+                                "ADMIN", "HEAD_COACH", "ASSISTANT_COACH", "SPECIFIC_COACH",
                                 "FITNESS_COACH", "PERFORMANCE_ANALYST", "TEAM_DOCTOR",
-                                "PHYSIOTHERAPIST")
+                                "PHYSIOTHERAPIST", "TEAM_MANAGER")
+                        .requestMatchers(HttpMethod.PUT, "/players/**").hasAnyRole(
+                                "ADMIN", "HEAD_COACH")
 
                         // ===== Medical & Fitness =====
                         .requestMatchers("/injuries/**").hasAnyRole(
@@ -154,7 +149,7 @@ public class GatewaySecurityConfig {
                                 "ADMIN", "HEAD_COACH", "FITNESS_COACH", "PERFORMANCE_ANALYST")
 
                         // ===== Role-specific =====
-                        .requestMatchers("/scouts/**").hasRole("SCOUT")
+                        .requestMatchers("/scouts/**").hasAnyRole("ADMIN", "SCOUT")
                         .requestMatchers("/sponsors/**").hasAnyRole("ADMIN", "SPONSOR")
                         .requestMatchers("/national-teams/**").hasAnyRole("ADMIN", "NATIONAL_TEAM")
                         .requestMatchers("/fans/**").hasAnyRole("ADMIN", "FAN")
