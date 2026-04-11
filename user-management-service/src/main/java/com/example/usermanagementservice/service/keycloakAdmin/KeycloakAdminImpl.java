@@ -83,32 +83,26 @@ public class KeycloakAdminImpl implements KeycloakAdminService {
     public String getAdminAccessToken() {
         try {
             Map<String, String> params = new HashMap<>();
-            params.put("client_id", "admin-cli"); // Standard admin client
+            params.put("client_id", "admin-cli");
             params.put("username", adminUsername);
             params.put("password", adminPassword);
             params.put("grant_type", "password");
 
             String formBody = buildFormUrlencodedBody(params);
             
-            // Try to get token from the managed realm first, fallback to master if needed
-            String url = keycloakServerUrl + "/realms/" + realm + "/protocol/openid-connect/token";
+            // Always use master realm — the bootstrap admin lives there
+            // and has full admin powers over all realms
+            String url = keycloakServerUrl + "/realms/master/protocol/openid-connect/token";
 
-            log.debug("Attempting to get admin token from: {}", url);
+            log.debug("Attempting to get admin token from master realm: {}", url);
 
-            Map<String, Object> response;
-            try {
-                response = fetchToken(url, formBody);
-            } catch (Exception e) {
-                log.warn("Failed to get token from realm {}, trying master realm...", realm);
-                url = keycloakServerUrl + "/realms/master/protocol/openid-connect/token";
-                response = fetchToken(url, formBody);
-            }
+            Map<String, Object> response = fetchToken(url, formBody);
 
             if (response == null || response.get("access_token") == null) {
                 throw new KeycloakInvalidResponseException("Keycloak did not return access token");
             }
 
-            log.debug("Successfully obtained admin access token");
+            log.debug("Successfully obtained admin access token from master realm");
             return (String) response.get("access_token");
 
         } catch (RestClientException ex) {
