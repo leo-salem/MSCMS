@@ -157,7 +157,7 @@ public class GatewaySecurityConfig {
                         .requestMatchers("/scouts/**").hasRole("SCOUT")
                         .requestMatchers("/sponsors/**").hasAnyRole("ADMIN", "SPONSOR")
                         .requestMatchers("/national-teams/**").hasAnyRole("ADMIN", "NATIONAL_TEAM")
-                        .requestMatchers("/fans/**").hasRole("FAN")
+                        .requestMatchers("/fans/**").hasAnyRole("ADMIN", "FAN")
 
                         // Fallback — deny unauthenticated
                         .anyRequest().authenticated())

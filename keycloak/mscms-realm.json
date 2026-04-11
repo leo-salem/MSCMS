@@ -78,11 +78,19 @@
       "realmRoles": ["ADMIN"],
       "clientRoles": {
         "realm-management": [
+          "realm-admin",
           "manage-users",
           "query-users",
           "query-groups",
           "manage-clients",
-          "view-users"
+          "view-users",
+          "view-clients",
+          "view-realm",
+          "manage-realm",
+          "view-events",
+          "manage-events",
+          "view-identity-providers",
+          "manage-identity-providers"
         ]
       }
     },

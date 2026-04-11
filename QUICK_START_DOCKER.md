@@ -379,6 +379,7 @@ Create `keycloak/mscms-realm.json` and paste this:
       "realmRoles": ["ADMIN"],
       "clientRoles": {
         "realm-management": [
+          "realm-admin",
           "manage-users",
           "query-users",
           "query-groups",
