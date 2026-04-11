@@ -3,18 +3,21 @@ package com.example.usermanagementservice.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Configuration
+@EnableMethodSecurity
 public class SecurityConfig {
 
     @Bean
@@ -23,7 +26,12 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/actuator/**"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
@@ -33,31 +41,27 @@ public class SecurityConfig {
     }
 
     @Bean
-    public org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter jwtAuthenticationConverter() {
-        org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter =
-                new org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter();
-        grantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
-        grantedAuthoritiesConverter.setAuthoritiesClaimName("realm_access");
+    public JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
 
-        org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter jwtAuthenticationConverter =
-                new org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter();
-        
-        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwt -> {
-            java.util.Collection<org.springframework.security.core.GrantedAuthority> authorities = grantedAuthoritiesConverter.convert(jwt);
-            
-            // Keycloak "realm_access" is a map: { "roles": ["ADMIN", ... ] }
-            // The default converter might not handle it correctly if it's nested
+        converter.setJwtGrantedAuthoritiesConverter(jwt -> {
+            Set<GrantedAuthority> authorities = new HashSet<>();
+
+            // Extract roles from Keycloak's realm_access.roles claim
             Map<String, Object> realmAccess = jwt.getClaim("realm_access");
-            if (realmAccess != null && realmAccess.containsKey("roles")) {
-                List<String> roles = (List<String>) realmAccess.get("roles");
-                authorities.addAll(roles.stream()
-                        .map(role -> new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_" + role))
-                        .collect(java.util.stream.Collectors.toList()));
+            if (realmAccess != null) {
+                Object rolesObj = realmAccess.get("roles");
+                if (rolesObj instanceof Collection<?> roles) {
+                    for (Object role : roles) {
+                        authorities.add(new SimpleGrantedAuthority("ROLE_" + role));
+                    }
+                }
             }
+
             return authorities;
         });
-        
-        return jwtAuthenticationConverter;
+
+        return converter;
     }
 
     @Bean
