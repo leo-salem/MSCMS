@@ -21,8 +21,8 @@ public class MatchFormation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany()
-    private Set<Match>matches = new HashSet<>();
+    @OneToMany(mappedBy = "matchFormation")
+    private Set<Match> matches = new HashSet<>();
 
     private Long teamId;
 

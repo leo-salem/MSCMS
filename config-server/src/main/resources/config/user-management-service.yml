@@ -18,7 +18,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://keycloak:8080/realms/mscms
+          jwk-set-uri: http://keycloak:8080/realms/mscms/protocol/openid-connect/certs
 
 server:
   port: 8081
