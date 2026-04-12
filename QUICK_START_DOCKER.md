@@ -83,7 +83,7 @@ services:
     container_name: keycloak
     environment:
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
-      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin123
     command: ["start-dev", "--import-realm"]
     volumes:
       - ./keycloak/mscms-realm.json:/opt/keycloak/data/import/mscms-realm.json
@@ -94,6 +94,14 @@ services:
       interval: 10s
       timeout: 5s
       retries: 12
+    networks:
+      - mscms-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
     networks:
       - mscms-network
 
@@ -135,11 +143,14 @@ services:
       - "8080:8080"
     environment:
       - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8082
+      - SPRING_DATA_REDIS_HOST=redis
     depends_on:
       config-server:
         condition: service_healthy
       keycloak:
         condition: service_healthy
+      redis:
+        condition: service_started
     networks:
       - mscms-network
 
@@ -156,6 +167,7 @@ services:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
       - KEYCLOAK_USER=admin
       - KEYCLOAK_PASSWORD=admin123
+      - KEYCLOAK_REALM=mscms
       - APP_ADMIN_KEYCLOAK_ID=default-admin-id
       - APP_ADMIN_FIRST_NAME=Admin
       - APP_ADMIN_LAST_NAME=User
@@ -334,7 +346,16 @@ Create `keycloak/mscms-realm.json` and paste this:
       { "name": "FAN", "description": "Fan role" },
       { "name": "STAFF", "description": "Staff role" },
       { "name": "SPORT_MANAGER", "description": "Sport Manager role" },
-      { "name": "TEAM_MANAGER", "description": "Team Manager role" }
+      { "name": "TEAM_MANAGER", "description": "Team Manager role" },
+      { "name": "HEAD_COACH", "description": "Head Coach role" },
+      { "name": "ASSISTANT_COACH", "description": "Assistant Coach role" },
+      { "name": "SPECIFIC_COACH", "description": "Specific Coach role" },
+      { "name": "DOCTOR", "description": "Doctor role" },
+      { "name": "PHYSIOTHERAPIST", "description": "Physiotherapist role" },
+      { "name": "FITNESS_COACH", "description": "Fitness Coach role" },
+      { "name": "PERFORMANCE_ANALYST", "description": "Performance Analyst role" },
+      { "name": "TEAM_DOCTOR", "description": "Team Doctor role" },
+      { "name": "NATIONAL_TEAM", "description": "National Team role" }
     ]
   },
   "clients": [
@@ -432,9 +453,9 @@ Wait **2–3 minutes** for all services to start and register with each other.
 
 | What | URL | Notes |
 | :--- | :--- | :--- |
-| **Eureka Dashboard** | http://localhost:8761 | All 7 services should show as `UP` |
+| **Eureka Dashboard** | http://localhost:8761 | All 8 services should show as `UP` |
 | **Swagger UI (API Docs)** | http://localhost:8080/swagger-ui.html | Interactive API testing |
-| **Keycloak Admin** | http://localhost:8443 | User: `admin` / Pass: `admin` |
+| **Keycloak Admin** | http://localhost:8443 | User: `admin` / Pass: `admin123` |
 
 ---
 
@@ -454,9 +475,9 @@ Content-Type: application/json
   "password": "admin123"
 }
 ```
-The response will contain an `accessToken`. Use it in all subsequent requests.
+The response will contain an `access_token`. Use it in all subsequent requests.
 
-### Signup (create a new user)
+### Signup (create a new FAN user)
 ```
 POST http://localhost:8080/auth/signup
 Content-Type: application/json
@@ -467,10 +488,38 @@ Content-Type: application/json
   "password": "MyPassword123",
   "firstName": "John",
   "lastName": "Doe",
-  "role": "FAN"
+  "displayName": "JohnDoe",
+  "phone": "+1234567890",
+  "age": 25,
+  "gender": "MALE",
+  "address": "123 Main St",
+  "bloodType": "O_POSITIVE"
 }
 ```
-Available roles: `ADMIN`, `SPORT_MANAGER`, `TEAM_MANAGER`, `FAN`, `SCOUT`, `SPONSOR`, `NATIONAL_TEAM`
+Signup always creates a **FAN** role. To create users with other roles, use the admin endpoint:
+
+### Admin: Create user with specific role
+```
+POST http://localhost:8080/auth/admin/create-user
+Authorization: Bearer <ADMIN_TOKEN>
+Content-Type: application/json
+
+{
+  "username": "coachsmith",
+  "email": "coach@example.com",
+  "password": "CoachPass123",
+  "firstName": "Coach",
+  "lastName": "Smith",
+  "displayName": "CoachSmith",
+  "phone": "+1987654321",
+  "age": 40,
+  "gender": "MALE",
+  "address": "456 Stadium Rd",
+  "bloodType": "A_POSITIVE",
+  "role": "COACH"
+}
+```
+Available roles: `ADMIN`, `COACH`, `PLAYER`, `SCOUT`, `SPONSOR`, `FAN`, `STAFF`, `SPORT_MANAGER`, `TEAM_MANAGER`, `HEAD_COACH`, `ASSISTANT_COACH`, `SPECIFIC_COACH`, `DOCTOR`, `PHYSIOTHERAPIST`, `FITNESS_COACH`, `PERFORMANCE_ANALYST`, `TEAM_DOCTOR`, `NATIONAL_TEAM`
 
 ### Using the Token
 Add this header to every request:
@@ -490,15 +539,20 @@ The API Gateway enforces role-based security. If a role doesn't have access, you
 | `/fitness-tests/**` | ADMIN, TEAM_DOCTOR, FITNESS_COACH |
 | `/training-loads/**` | ADMIN, FITNESS_COACH, HEAD_COACH, PERFORMANCE_ANALYST |
 | `/training-sessions/**`, `/training-plans/**`, `/training-drills/**` | ADMIN, HEAD_COACH, ASSISTANT_COACH, SPECIFIC_COACH, FITNESS_COACH |
+| `/training-attendance/**`, `/player-training-assessments/**` | ADMIN, HEAD_COACH, ASSISTANT_COACH, PERFORMANCE_ANALYST |
 | `/matches/**`, `/match-events/**`, `/match-formations/**`, `/match-lineups/**` | ADMIN, HEAD_COACH, PERFORMANCE_ANALYST |
+| `/match-performance-reviews/**`, `/player-match-statistics/**` | ADMIN, HEAD_COACH, PERFORMANCE_ANALYST |
 | `/teams/**` | ADMIN, SPORT_MANAGER, TEAM_MANAGER, HEAD_COACH |
 | `/sports/**` | ADMIN, SPORT_MANAGER |
 | `/rosters/**`, `/player-contracts/**` | ADMIN, HEAD_COACH, TEAM_MANAGER |
+| `/player-transfers-incoming/**`, `/player-transfers-outgoing/**` | ADMIN, TEAM_MANAGER, SCOUT |
+| `/player-callups/**` | ADMIN, TEAM_MANAGER, NATIONAL_TEAM |
 | `/players/**` (GET) | ADMIN, HEAD_COACH, ASSISTANT_COACH, TEAM_DOCTOR, PHYSIOTHERAPIST |
 | `/scouts/**`, `/scout-reports/**`, `/outer-players/**`, `/outer-teams/**` | ADMIN, SCOUT |
 | `/sponsors/**`, `/sponsor-offers/**` | ADMIN, SPONSOR |
 | `/fans/**` | ADMIN, FAN |
-| `/notifications/**`, `/messages/**` | Any authenticated user |
+| `/notifications/**`, `/alerts/**`, `/messages/**` | Any authenticated user (POST: ADMIN only for notifications/alerts) |
+| `/match-analyses/**`, `/player-analytics/**`, `/team-analytics/**`, `/training-analytics/**` | ADMIN, PERFORMANCE_ANALYST, HEAD_COACH |
 
 ---
 
@@ -571,6 +625,7 @@ Browser/Frontend (React, Angular, etc.)
   ├── Eureka Server (:8761) — service discovery
   ├── Keycloak (:8443) — identity provider
   ├── PostgreSQL (:5432) — database
+  ├── Redis (:6379) — caching & rate limiting
   ├── RabbitMQ (:15672) — messaging
   └── Kafka (:9092) — event streaming
 ```
