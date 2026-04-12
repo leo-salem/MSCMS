@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/transfers/incoming")
+@RequestMapping("/player-transfers-incoming")
 @Validated
 public class PlayerTransferIncomingController {
 

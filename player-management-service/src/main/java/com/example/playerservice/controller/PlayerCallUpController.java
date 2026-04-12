@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/call-ups")
+@RequestMapping("/player-callups")
 @Validated
 public class PlayerCallUpController {
 

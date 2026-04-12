@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/match-stats")
+@RequestMapping("/player-match-statistics")
 @Validated
 public class PlayerMatchStatisticsController {
 
