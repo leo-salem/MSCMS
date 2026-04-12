@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/training-assessments")
+@RequestMapping("/player-training-assessments")
 @Validated
 public class PlayerTrainingAssessmentController {
 

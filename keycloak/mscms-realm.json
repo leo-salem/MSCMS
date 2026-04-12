@@ -21,7 +21,16 @@
       { "name": "FAN", "description": "Fan role" },
       { "name": "STAFF", "description": "Staff role" },
       { "name": "SPORT_MANAGER", "description": "Sport Manager role" },
-      { "name": "TEAM_MANAGER", "description": "Team Manager role" }
+      { "name": "TEAM_MANAGER", "description": "Team Manager role" },
+      { "name": "HEAD_COACH", "description": "Head Coach role" },
+      { "name": "ASSISTANT_COACH", "description": "Assistant Coach role" },
+      { "name": "SPECIFIC_COACH", "description": "Specific Coach role" },
+      { "name": "DOCTOR", "description": "Doctor role" },
+      { "name": "PHYSIOTHERAPIST", "description": "Physiotherapist role" },
+      { "name": "FITNESS_COACH", "description": "Fitness Coach role" },
+      { "name": "PERFORMANCE_ANALYST", "description": "Performance Analyst role" },
+      { "name": "TEAM_DOCTOR", "description": "Team Doctor role" },
+      { "name": "NATIONAL_TEAM", "description": "National Team role" }
     ]
   },
   "clients": [
