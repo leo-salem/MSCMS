@@ -144,8 +144,6 @@ services:
     environment:
       - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8082
       - SPRING_DATA_REDIS_HOST=redis
-      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI=http://keycloak:8080/realms/mscms/protocol/openid-connect/certs
-      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://keycloak:8080/realms/mscms
     depends_on:
       config-server:
         condition: service_healthy
@@ -167,8 +165,6 @@ services:
       - DB_USER=embarkx
       - DB_PASSWORD=embarkx
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
-      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI=http://keycloak:8080/realms/mscms/protocol/openid-connect/certs
-      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://keycloak:8080/realms/mscms
       - KEYCLOAK_USER=admin
       - KEYCLOAK_PASSWORD=admin123
       - KEYCLOAK_REALM=mscms
@@ -522,7 +518,7 @@ Content-Type: application/json
   "gender": "MALE",
   "address": "456 Stadium Rd",
   "bloodType": "A_POSITIVE",
-  "role": "COACH"
+  "role": "HEAD_COACH"
 }
 ```
 Available roles: `ADMIN`, `COACH`, `PLAYER`, `SCOUT`, `SPONSOR`, `FAN`, `STAFF`, `SPORT_MANAGER`, `TEAM_MANAGER`, `HEAD_COACH`, `ASSISTANT_COACH`, `SPECIFIC_COACH`, `DOCTOR`, `PHYSIOTHERAPIST`, `FITNESS_COACH`, `PERFORMANCE_ANALYST`, `TEAM_DOCTOR`, `NATIONAL_TEAM`
@@ -541,24 +537,49 @@ The API Gateway enforces role-based security. If a role doesn't have access, you
 
 | Endpoints | Allowed Roles |
 | :--- | :--- |
-| `/injuries/**`, `/diagnoses/**`, `/treatments/**`, `/recovery-programs/**` | ADMIN, TEAM_DOCTOR, PHYSIOTHERAPIST, HEAD_COACH |
+| **Medical & Fitness** | |
+| `/injuries/**` | ADMIN, TEAM_DOCTOR, PHYSIOTHERAPIST, HEAD_COACH |
+| `/diagnoses/**` | ADMIN, TEAM_DOCTOR |
+| `/treatments/**`, `/rehabilitations/**`, `/recovery-programs/**` | ADMIN, TEAM_DOCTOR, PHYSIOTHERAPIST |
 | `/fitness-tests/**` | ADMIN, TEAM_DOCTOR, FITNESS_COACH |
 | `/training-loads/**` | ADMIN, FITNESS_COACH, HEAD_COACH, PERFORMANCE_ANALYST |
-| `/training-sessions/**`, `/training-plans/**`, `/training-drills/**` | ADMIN, HEAD_COACH, ASSISTANT_COACH, SPECIFIC_COACH, FITNESS_COACH |
-| `/training-attendance/**`, `/player-training-assessments/**` | ADMIN, HEAD_COACH, ASSISTANT_COACH, PERFORMANCE_ANALYST |
-| `/matches/**`, `/match-events/**`, `/match-formations/**`, `/match-lineups/**` | ADMIN, HEAD_COACH, PERFORMANCE_ANALYST |
+| **Training & Match** | |
+| `/training-sessions/**` | ADMIN, HEAD_COACH, ASSISTANT_COACH, SPECIFIC_COACH, FITNESS_COACH |
+| `/training-plans/**` | ADMIN, HEAD_COACH, ASSISTANT_COACH |
+| `/training-drills/**` | ADMIN, HEAD_COACH, ASSISTANT_COACH, SPECIFIC_COACH |
+| `/training-attendance/**` | ADMIN, HEAD_COACH, ASSISTANT_COACH |
+| `/player-training-assessments/**` | ADMIN, HEAD_COACH, ASSISTANT_COACH, SPECIFIC_COACH, FITNESS_COACH |
+| `/matches/**` | ADMIN, HEAD_COACH, ASSISTANT_COACH, PERFORMANCE_ANALYST |
+| `/match-events/**` | ADMIN, HEAD_COACH, PERFORMANCE_ANALYST |
+| `/match-formations/**`, `/match-lineups/**` | ADMIN, HEAD_COACH |
 | `/match-performance-reviews/**`, `/player-match-statistics/**` | ADMIN, HEAD_COACH, PERFORMANCE_ANALYST |
+| **Player Management** | |
 | `/teams/**` | ADMIN, SPORT_MANAGER, TEAM_MANAGER, HEAD_COACH |
 | `/sports/**` | ADMIN, SPORT_MANAGER |
-| `/rosters/**`, `/player-contracts/**` | ADMIN, HEAD_COACH, TEAM_MANAGER |
-| `/player-transfers-incoming/**`, `/player-transfers-outgoing/**` | ADMIN, TEAM_MANAGER, SCOUT |
-| `/player-callups/**` | ADMIN, TEAM_MANAGER, NATIONAL_TEAM |
-| `/players/**` (GET) | ADMIN, HEAD_COACH, ASSISTANT_COACH, TEAM_DOCTOR, PHYSIOTHERAPIST |
-| `/scouts/**`, `/scout-reports/**`, `/outer-players/**`, `/outer-teams/**` | ADMIN, SCOUT |
-| `/sponsors/**`, `/sponsor-offers/**` | ADMIN, SPONSOR |
+| `/rosters/**` | ADMIN, HEAD_COACH, TEAM_MANAGER |
+| `/player-contracts/**` | ADMIN, SPORT_MANAGER, TEAM_MANAGER |
+| `/player-transfers-incoming/**`, `/player-transfers-outgoing/**` | ADMIN, SPORT_MANAGER |
+| `/player-callups/**` | ADMIN, HEAD_COACH, NATIONAL_TEAM |
+| `/players/**` (GET) | ADMIN, HEAD_COACH, ASSISTANT_COACH, SPECIFIC_COACH, FITNESS_COACH, PERFORMANCE_ANALYST, TEAM_DOCTOR, PHYSIOTHERAPIST, TEAM_MANAGER |
+| `/players/**` (POST/DELETE) | ADMIN only |
+| `/players/**` (PUT) | ADMIN, HEAD_COACH |
+| `/outer-players/**`, `/outer-teams/**` | ADMIN, SCOUT |
+| **User Management** | |
+| `/sport-managers/**` | ADMIN, SPORT_MANAGER |
+| `/team-managers/**` | ADMIN, SPORT_MANAGER, TEAM_MANAGER |
+| `/staff/**` | ADMIN, SPORT_MANAGER, TEAM_MANAGER |
+| `/scouts/**` | ADMIN, SCOUT |
+| `/sponsors/**` | ADMIN, SPONSOR |
+| `/national-teams/**` | ADMIN, NATIONAL_TEAM |
 | `/fans/**` | ADMIN, FAN |
-| `/notifications/**`, `/alerts/**`, `/messages/**` | Any authenticated user (POST: ADMIN only for notifications/alerts) |
-| `/match-analyses/**`, `/player-analytics/**`, `/team-analytics/**`, `/training-analytics/**` | ADMIN, PERFORMANCE_ANALYST, HEAD_COACH |
+| **Notification & Mail** | |
+| `/notifications/**`, `/messages/**` | Any authenticated user |
+| `/alerts/**` | ADMIN, HEAD_COACH, TEAM_DOCTOR |
+| **Reports & Analytics** | |
+| `/match-analyses/**`, `/team-analytics/**`, `/training-analytics/**` | ADMIN, HEAD_COACH, PERFORMANCE_ANALYST |
+| `/player-analytics/**` | ADMIN, HEAD_COACH, PERFORMANCE_ANALYST, SCOUT |
+| `/scout-reports/**` | ADMIN, SCOUT |
+| `/sponsor-offers/**` | ADMIN, SPONSOR |
 
 ---
 
