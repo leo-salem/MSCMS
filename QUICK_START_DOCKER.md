@@ -477,6 +477,8 @@ Content-Type: application/json
 ```
 The response will contain an `access_token`. Use it in all subsequent requests.
 
+> **Note for frontend developers:** You can also obtain tokens directly from Keycloak at `http://localhost:8443/realms/mscms/protocol/openid-connect/token` using the standard OIDC flow. The gateway accepts tokens issued from any Keycloak URL (localhost or internal Docker network) — no issuer mismatch issues.
+
 ### Signup (create a new FAN user)
 ```
 POST http://localhost:8080/auth/signup
@@ -553,6 +555,20 @@ The API Gateway enforces role-based security. If a role doesn't have access, you
 | `/fans/**` | ADMIN, FAN |
 | `/notifications/**`, `/alerts/**`, `/messages/**` | Any authenticated user (POST: ADMIN only for notifications/alerts) |
 | `/match-analyses/**`, `/player-analytics/**`, `/team-analytics/**`, `/training-analytics/**` | ADMIN, PERFORMANCE_ANALYST, HEAD_COACH |
+
+---
+
+## 🔔 Notable API Details
+
+- **`PATCH /alerts/{id}/acknowledge`** requires query parameter `acknowledgedByKeycloakId`:
+  ```
+  PATCH http://localhost:8080/alerts/1/acknowledge?acknowledgedByKeycloakId=<KEYCLOAK_ID>
+  ```
+- **`GET /players`** requires query parameter `status` (values: `AVAILABLE`, `INJURED`, `ABSENT`, `SUSPENDED`):
+  ```
+  GET http://localhost:8080/players?status=AVAILABLE
+  ```
+- **`DELETE /match-formations/{id}`** safely detaches any linked matches before deleting.
 
 ---
 

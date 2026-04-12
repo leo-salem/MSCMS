@@ -22,9 +22,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String adminEmail);
 
     @Query("SELECT u FROM User u WHERE " +
-           "(CAST(:firstName AS string) IS NULL OR LOWER(u.firstName) LIKE LOWER(CONCAT('%', :firstName, '%'))) AND " +
-           "(CAST(:lastName AS string) IS NULL OR LOWER(u.lastName) LIKE LOWER(CONCAT('%', :lastName, '%'))) AND " +
-           "(CAST(:email AS string) IS NULL OR LOWER(u.email) LIKE LOWER(CONCAT('%', :email, '%'))) AND " +
+           "(CAST(:firstName AS string) IS NULL OR LOWER(u.firstName) LIKE LOWER(CONCAT('%', CAST(:firstName AS string), '%'))) AND " +
+           "(CAST(:lastName AS string) IS NULL OR LOWER(u.lastName) LIKE LOWER(CONCAT('%', CAST(:lastName AS string), '%'))) AND " +
+           "(CAST(:email AS string) IS NULL OR LOWER(u.email) LIKE LOWER(CONCAT('%', CAST(:email AS string), '%'))) AND " +
            "(:gender IS NULL OR u.gender = :gender) AND " +
            "(:role IS NULL OR u.role = :role) AND " +
            "(:minAge IS NULL OR u.age >= :minAge) AND " +
