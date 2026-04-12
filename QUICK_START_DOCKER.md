@@ -144,6 +144,8 @@ services:
     environment:
       - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8082
       - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI=http://keycloak:8080/realms/mscms/protocol/openid-connect/certs
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://keycloak:8080/realms/mscms
     depends_on:
       config-server:
         condition: service_healthy
@@ -165,6 +167,8 @@ services:
       - DB_USER=embarkx
       - DB_PASSWORD=embarkx
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI=http://keycloak:8080/realms/mscms/protocol/openid-connect/certs
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://keycloak:8080/realms/mscms
       - KEYCLOAK_USER=admin
       - KEYCLOAK_PASSWORD=admin123
       - KEYCLOAK_REALM=mscms
@@ -477,7 +481,7 @@ Content-Type: application/json
 ```
 The response will contain an `access_token`. Use it in all subsequent requests.
 
-> **Note for frontend developers:** You can also obtain tokens directly from Keycloak at `http://localhost:8443/realms/mscms/protocol/openid-connect/token` using the standard OIDC flow. The gateway accepts tokens issued from any Keycloak URL (localhost or internal Docker network) — no issuer mismatch issues.
+> **Note for frontend developers:** Always use the gateway's `/auth/login` endpoint to obtain tokens — do **not** call Keycloak directly at `localhost:8443`. The gateway gets tokens from the internal Keycloak and the JWT issuer must match the internal URL. Tokens obtained from `/auth/login` work seamlessly with all API endpoints.
 
 ### Signup (create a new FAN user)
 ```
