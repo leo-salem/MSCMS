@@ -1,9 +1,7 @@
 package com.example.usermanagementservice.model.entity;
 
 import com.example.usermanagementservice.model.entity.staff.StaffMember;
-import com.example.usermanagementservice.model.enums.Role;
 import jakarta.persistence.*;
-import jakarta.transaction.RollbackException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,7 +28,4 @@ public class TeamManager extends User{
 
     @OneToMany(mappedBy = "teamManager",cascade = {CascadeType.PERSIST,CascadeType.MERGE})
     private Set<StaffMember>staffMembers = new HashSet<>();
-
-    @Enumerated(EnumType.STRING)
-    private Role role = Role.TEAM_MANGER;
 }

@@ -565,6 +565,10 @@ The API Gateway enforces role-based security. If a role doesn't have access, you
 | `/players/**` (PUT) | ADMIN, HEAD_COACH |
 | `/outer-players/**`, `/outer-teams/**` | ADMIN, SCOUT |
 | **User Management** | |
+| `GET /users` (list all users) | ADMIN only |
+| `GET /users/search` (filtered search) | ADMIN only |
+| `GET /users/{id}` | ADMIN or the user themselves |
+| `POST /users/**`, `DELETE /users/**` | ADMIN only |
 | `/sport-managers/**` | ADMIN, SPORT_MANAGER |
 | `/team-managers/**` | ADMIN, SPORT_MANAGER, TEAM_MANAGER |
 | `/staff/**` | ADMIN, SPORT_MANAGER, TEAM_MANAGER |
@@ -594,6 +598,8 @@ The API Gateway enforces role-based security. If a role doesn't have access, you
   GET http://localhost:8080/players?status=AVAILABLE
   ```
 - **`DELETE /match-formations/{id}`** safely detaches any linked matches before deleting.
+- **`GET /users`** returns every user in the system across all roles (ADMIN only).
+- **`GET /users/search`** accepts optional query params: `firstName`, `lastName`, `email`, `gender`, `role`, `minAge`, `maxAge`. Returns all matching users regardless of role (ADMIN only).
 
 ---
 

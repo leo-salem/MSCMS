@@ -27,6 +27,14 @@ public class UserController {
 
     private final UserService userService;
 
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Get all users (admin only)")
+    public ResponseEntity<ApiResponse<List<UserResponse>>> getAllUsers() {
+        List<UserResponse> users = userService.getAllUsers();
+        return ResponseEntity.ok(ApiResponse.success(users));
+    }
+
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or @securityService.isCurrentUser(#id)")
     @Operation(summary = "Get user by ID")

@@ -14,6 +14,7 @@ public interface UserService {
     UserResponse updateUser(Long id, UserUpdateRequest request);
     void deleteUser(Long id);
     List<UserResponse> searchUsers(UserSearchCriteria criteria);
+    List<UserResponse> getAllUsers();
     List<UserStatsResponse> getUserStatsByRole();
     void updatePassword(Long id, PasswordUpdateRequest request);
 }

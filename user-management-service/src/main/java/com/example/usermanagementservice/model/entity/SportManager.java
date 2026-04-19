@@ -1,6 +1,5 @@
 package com.example.usermanagementservice.model.entity;
 
-import com.example.usermanagementservice.model.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,7 +23,4 @@ public class SportManager extends User{
 
     @OneToMany(mappedBy = "sportManager",cascade = {CascadeType.PERSIST,CascadeType.MERGE})
     private Set<TeamManager> teamManagerSet = new HashSet<>();
-
-    @Enumerated(EnumType.STRING)
-    private Role role = Role.SPORT_MANGER;
 }

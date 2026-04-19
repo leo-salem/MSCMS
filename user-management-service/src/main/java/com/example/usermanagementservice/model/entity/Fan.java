@@ -1,9 +1,6 @@
 package com.example.usermanagementservice.model.entity;
 
-import com.example.usermanagementservice.model.enums.Role;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,7 +17,4 @@ public class Fan extends User {
 
     private String displayName;
     private Long favoriteTeamId;
-
-    @Enumerated(EnumType.STRING)
-    private Role role = Role.FAN;
 }
