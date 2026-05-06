@@ -28,6 +28,10 @@ spring:
             uri: lb://NOTIFICATION-MAIL-SERVICE
             predicates:
               - Path=/notifications/**,/alerts/**,/messages/**
+          - id: ml-model-service
+            uri: lb://ML-MODEL-SERVICE
+            predicates:
+              - Path=/ml/**
           - id: reports-analytics-service
             uri: lb://REPORTS-ANALYTICS-SERVICE
             predicates:
@@ -62,6 +66,12 @@ spring:
               - Path=/notification-mail/v3/api-docs/**
             filters:
               - StripPrefix=1
+          - id: ml-model-api-docs
+            uri: lb://ML-MODEL-SERVICE
+            predicates:
+              - Path=/ml-model/v3/api-docs/**
+            filters:
+              - StripPrefix=1
           - id: reports-analytics-api-docs
             uri: lb://REPORTS-ANALYTICS-SERVICE
             predicates:
@@ -84,6 +94,8 @@ springdoc:
         url: /medical-fitness/v3/api-docs
       - name: Notification & Mail
         url: /notification-mail/v3/api-docs
+      - name: ML Model
+        url: /ml-model/v3/api-docs
       - name: Reports & Analytics
         url: /reports-analytics/v3/api-docs
 
