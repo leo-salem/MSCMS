@@ -7,6 +7,7 @@ CREATE DATABASE mscms_reports;
 CREATE DATABASE mscms_wallet;
 CREATE DATABASE mscms_payment;
 CREATE DATABASE mscms_store;
+CREATE DATABASE mscms_ml;
 
 GRANT ALL PRIVILEGES ON DATABASE mscms_user TO embarkx;
 GRANT ALL PRIVILEGES ON DATABASE mscms_player TO embarkx;
@@ -17,3 +18,4 @@ GRANT ALL PRIVILEGES ON DATABASE mscms_reports TO embarkx;
 GRANT ALL PRIVILEGES ON DATABASE mscms_wallet TO embarkx;
 GRANT ALL PRIVILEGES ON DATABASE mscms_payment TO embarkx;
 GRANT ALL PRIVILEGES ON DATABASE mscms_store TO embarkx;
+GRANT ALL PRIVILEGES ON DATABASE mscms_ml TO embarkx;

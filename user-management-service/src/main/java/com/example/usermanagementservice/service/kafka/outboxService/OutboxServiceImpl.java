@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.example.usermanagementservice.dto.event.*;
+import com.example.usermanagementservice.model.entity.Player;
 import com.example.usermanagementservice.model.entity.User;
 import com.example.usermanagementservice.model.event.OutboxEvent;
 import com.example.usermanagementservice.repository.OutboxEventRepository;
@@ -24,32 +25,44 @@ public class OutboxServiceImpl implements OutboxService {
     @Transactional
     public void publishUserCreatedEvent(User user) {
         log.debug("Publishing user created event for user: {}", user.getId());
-        UserCreatedEvent event = UserCreatedEvent.builder()
+        UserCreatedEvent.UserCreatedEventBuilder b = UserCreatedEvent.builder()
                 .userId(user.getId())
                 .keycloakId(user.getKeycloakId())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .email(user.getEmail())
                 .role(user.getRole().name())
-                .timestamp(Instant.now())
-                .build();
-        saveOutboxEvent("user", String.valueOf(user.getId()), "user.created", event);
+                .timestamp(Instant.now());
+        if (user instanceof Player p) {
+            b.dateOfBirth(p.getDateOfBirth())
+                    .nationality(p.getNationality())
+                    .preferredPosition(p.getPreferredPosition() != null ? p.getPreferredPosition().name() : null)
+                    .kitNumber(p.getKitNumber())
+                    .marketValue(p.getMarketValue());
+        }
+        saveOutboxEvent("user", String.valueOf(user.getId()), "user.created", b.build());
     }
 
     @Override
     @Transactional
     public void publishUserUpdatedEvent(User user) {
         log.debug("Publishing user updated event for user: {}", user.getId());
-        UserUpdatedEvent event = UserUpdatedEvent.builder()
+        UserUpdatedEvent.UserUpdatedEventBuilder b = UserUpdatedEvent.builder()
                 .userId(user.getId())
                 .keycloakId(user.getKeycloakId())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .email(user.getEmail())
                 .role(user.getRole().name())
-                .timestamp(Instant.now())
-                .build();
-        saveOutboxEvent("user", String.valueOf(user.getId()), "user.updated", event);
+                .timestamp(Instant.now());
+        if (user instanceof Player p) {
+            b.dateOfBirth(p.getDateOfBirth())
+                    .nationality(p.getNationality())
+                    .preferredPosition(p.getPreferredPosition() != null ? p.getPreferredPosition().name() : null)
+                    .kitNumber(p.getKitNumber())
+                    .marketValue(p.getMarketValue());
+        }
+        saveOutboxEvent("user", String.valueOf(user.getId()), "user.updated", b.build());
     }
 
     @Override
