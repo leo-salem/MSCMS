@@ -60,6 +60,14 @@ public class GatewaySecurityConfig {
                         .requestMatchers("/auth/admin/**").hasRole("ADMIN")
                         .requestMatchers("/auth/logout").authenticated()
 
+                        // Payment provider webhooks — signature-verified by payment-service.
+                        // MUST be unauthenticated since Stripe will not send a JWT.
+                        .requestMatchers("/webhooks/**").permitAll()
+
+                        // Public browsing of catalog + auctions
+                        .requestMatchers(HttpMethod.GET, "/products", "/products/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/auctions", "/auctions/**").permitAll()
+
                         // ADMIN-only (User Management)
                         .requestMatchers(HttpMethod.POST, "/users/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/users/**").hasRole("ADMIN")
@@ -163,6 +171,20 @@ public class GatewaySecurityConfig {
                         .requestMatchers("/national-teams/**").hasAnyRole("ADMIN", "NATIONAL_TEAM")
                         .requestMatchers("/fans/**").hasAnyRole("ADMIN", "FAN")
 
+                        // ===== Wallet / Payment / Store =====
+                        // Admin-only operations
+                        .requestMatchers(HttpMethod.POST, "/products/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/products/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/products/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/auctions").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/auctions/*/cancel").hasRole("ADMIN")
+                        .requestMatchers("/wallets/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/orders/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/donations/analytics").hasRole("ADMIN")
+                        // Everything else (wallet/me, payments, orders, bids, donations) just needs auth
+                        .requestMatchers("/wallets/**", "/payments/**",
+                                "/orders/**", "/auctions/*/bids/**", "/donations/**").authenticated()
+
                         // Fallback — deny unauthenticated
                         .anyRequest().authenticated())
 
@@ -197,7 +219,7 @@ public class GatewaySecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("*"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
+        configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token", "Stripe-Signature"));
         configuration.setExposedHeaders(Arrays.asList("x-auth-token"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

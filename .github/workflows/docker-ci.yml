@@ -24,6 +24,9 @@ jobs:
           - reports-analytics-service
           - training-match-service
           - user-management-service
+          - wallet-service
+          - payment-service
+          - store-service
 
     steps:
       - name: Checkout repository
