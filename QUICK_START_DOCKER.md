@@ -168,7 +168,7 @@ services:
       - KEYCLOAK_USER=admin
       - KEYCLOAK_PASSWORD=admin123
       - KEYCLOAK_REALM=mscms
-      - APP_ADMIN_KEYCLOAK_ID=default-admin-id
+      - APP_ADMIN_KEYCLOAK_ID=00000000-0000-0000-0000-000000000001
       - APP_ADMIN_FIRST_NAME=Admin
       - APP_ADMIN_LAST_NAME=User
       - APP_ADMIN_USERNAME=admin
@@ -181,6 +181,7 @@ services:
       - APP_ADMIN_BLOOD_TYPE=O_POSITIVE
       - APP_ADMIN_ROLE=ADMIN
       - APP_ADMIN_CREATE_DEFAULT=true
+      - APP_SEED_ENABLED=true
     depends_on:
       config-server:
         condition: service_healthy
@@ -201,6 +202,7 @@ services:
       - DB_USER=embarkx
       - DB_PASSWORD=embarkx
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - APP_SEED_ENABLED=true
     depends_on:
       config-server:
         condition: service_healthy
@@ -219,6 +221,7 @@ services:
       - DB_USER=embarkx
       - DB_PASSWORD=embarkx
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - APP_SEED_ENABLED=true
     depends_on:
       config-server:
         condition: service_healthy
@@ -237,6 +240,7 @@ services:
       - DB_USER=embarkx
       - DB_PASSWORD=embarkx
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - APP_SEED_ENABLED=true
     depends_on:
       config-server:
         condition: service_healthy
@@ -275,6 +279,7 @@ services:
       - DB_USER=embarkx
       - DB_PASSWORD=embarkx
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - APP_SEED_ENABLED=true
     depends_on:
       config-server:
         condition: service_healthy
@@ -384,30 +389,126 @@ Create `keycloak/mscms-realm.json` and paste this:
   ],
   "users": [
     {
-      "username": "admin",
-      "email": "admin@mscms.com",
-      "firstName": "Admin",
-      "lastName": "User",
-      "enabled": true,
-      "emailVerified": true,
-      "credentials": [
-        {
-          "type": "password",
-          "value": "admin123",
-          "temporary": false
-        }
-      ],
+      "id": "00000000-0000-0000-0000-000000000001",
+      "username": "admin", "email": "admin@mscms.com", "firstName": "Admin", "lastName": "User",
+      "enabled": true, "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "admin123", "temporary": false }],
       "realmRoles": ["ADMIN"],
       "clientRoles": {
-        "realm-management": [
-          "realm-admin",
-          "manage-users",
-          "query-users",
-          "query-groups",
-          "manage-clients",
-          "view-users"
-        ]
+        "realm-management": ["realm-admin","manage-users","query-users","query-groups","manage-clients","view-users"]
       }
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000010",
+      "username": "sportmanager", "email": "sportmanager@mscms.com", "firstName": "Samir", "lastName": "Manager",
+      "enabled": true, "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "password123", "temporary": false }],
+      "realmRoles": ["SPORT_MANAGER"]
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000011",
+      "username": "teammanager", "email": "teammanager@mscms.com", "firstName": "Tarek", "lastName": "Manager",
+      "enabled": true, "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "password123", "temporary": false }],
+      "realmRoles": ["TEAM_MANAGER"]
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000020",
+      "username": "headcoach", "email": "headcoach@mscms.com", "firstName": "Hassan", "lastName": "Coach",
+      "enabled": true, "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "password123", "temporary": false }],
+      "realmRoles": ["STAFF", "HEAD_COACH", "COACH"]
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000021",
+      "username": "headcoach2", "email": "headcoach2@mscms.com", "firstName": "Karim", "lastName": "BasketCoach",
+      "enabled": true, "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "password123", "temporary": false }],
+      "realmRoles": ["STAFF", "HEAD_COACH", "COACH"]
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000030",
+      "username": "doctor", "email": "doctor@mscms.com", "firstName": "Dalia", "lastName": "Doctor",
+      "enabled": true, "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "password123", "temporary": false }],
+      "realmRoles": ["STAFF", "TEAM_DOCTOR", "DOCTOR"]
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000031",
+      "username": "physio", "email": "physio@mscms.com", "firstName": "Pierre", "lastName": "Physio",
+      "enabled": true, "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "password123", "temporary": false }],
+      "realmRoles": ["STAFF", "PHYSIOTHERAPIST"]
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000032",
+      "username": "fitness", "email": "fitness@mscms.com", "firstName": "Fadi", "lastName": "Fitness",
+      "enabled": true, "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "password123", "temporary": false }],
+      "realmRoles": ["STAFF", "FITNESS_COACH"]
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000040",
+      "username": "scout", "email": "scout@mscms.com", "firstName": "Sami", "lastName": "Scout",
+      "enabled": true, "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "password123", "temporary": false }],
+      "realmRoles": ["SCOUT"]
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000041",
+      "username": "sponsor", "email": "sponsor@mscms.com", "firstName": "Sara", "lastName": "Sponsor",
+      "enabled": true, "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "password123", "temporary": false }],
+      "realmRoles": ["SPONSOR"]
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000042",
+      "username": "fan", "email": "fan@mscms.com", "firstName": "Farid", "lastName": "Fan",
+      "enabled": true, "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "password123", "temporary": false }],
+      "realmRoles": ["FAN"]
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000101",
+      "username": "player1", "email": "player1@mscms.com", "firstName": "Mohamed", "lastName": "Salah",
+      "enabled": true, "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "password123", "temporary": false }],
+      "realmRoles": ["PLAYER"]
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000102",
+      "username": "player2", "email": "player2@mscms.com", "firstName": "Ahmed", "lastName": "Hegazy",
+      "enabled": true, "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "password123", "temporary": false }],
+      "realmRoles": ["PLAYER"]
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000103",
+      "username": "player3", "email": "player3@mscms.com", "firstName": "Omar", "lastName": "Defender",
+      "enabled": true, "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "password123", "temporary": false }],
+      "realmRoles": ["PLAYER"]
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000104",
+      "username": "player4", "email": "player4@mscms.com", "firstName": "Mahmoud", "lastName": "Keeper",
+      "enabled": true, "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "password123", "temporary": false }],
+      "realmRoles": ["PLAYER"]
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000105",
+      "username": "player5", "email": "player5@mscms.com", "firstName": "Yousef", "lastName": "Basket",
+      "enabled": true, "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "password123", "temporary": false }],
+      "realmRoles": ["PLAYER"]
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000106",
+      "username": "player6", "email": "player6@mscms.com", "firstName": "Layla", "lastName": "Tennis",
+      "enabled": true, "emailVerified": true,
+      "credentials": [{ "type": "password", "value": "password123", "temporary": false }],
+      "realmRoles": ["PLAYER"]
     }
   ]
 }
@@ -528,6 +629,65 @@ Add this header to every request:
 ```
 Authorization: Bearer <YOUR_TOKEN_HERE>
 ```
+
+---
+
+## 🌱 Seeded Demo Data (auto-loaded on first run)
+
+When `APP_SEED_ENABLED=true` (the default in `docker-compose.yml`), each service automatically inserts demo data into its database **the first time it starts** against an empty schema. The seeders are **idempotent** — they check if data already exists and skip if so, so restarts won't duplicate anything.
+
+If you want to start clean again, wipe the Postgres volume:
+```bash
+docker compose down -v
+docker compose up -d
+```
+
+To disable seeding entirely, set `APP_SEED_ENABLED=false` on each service.
+
+### Login credentials for every role
+
+All demo passwords are **`password123`** (except `admin` which is `admin123`).
+
+| Username | Password | Role(s) | Purpose |
+| :--- | :--- | :--- | :--- |
+| `admin` | `admin123` | ADMIN | Full access, can create users |
+| `sportmanager` | `password123` | SPORT_MANAGER | Manages sports/teams |
+| `teammanager` | `password123` | TEAM_MANAGER | Manages a single team's staff |
+| `headcoach` | `password123` | STAFF, HEAD_COACH, COACH | Football head coach (team 1) |
+| `headcoach2` | `password123` | STAFF, HEAD_COACH, COACH | Basketball head coach (team 2) |
+| `doctor` | `password123` | STAFF, TEAM_DOCTOR, DOCTOR | Reports injuries, makes diagnoses |
+| `physio` | `password123` | STAFF, PHYSIOTHERAPIST | Treatments, rehab |
+| `fitness` | `password123` | STAFF, FITNESS_COACH | Fitness tests, training loads |
+| `scout` | `password123` | SCOUT | Scout reports, outer players |
+| `sponsor` | `password123` | SPONSOR | Sponsor offers |
+| `fan` | `password123` | FAN | Read-only fan dashboard |
+| `player1` | `password123` | PLAYER | Mohamed Salah — football striker, team 1 |
+| `player2` | `password123` | PLAYER | Ahmed Hegazy — football midfielder, team 1 |
+| `player3` | `password123` | PLAYER | Omar — football defender, team 1 (currently injured) |
+| `player4` | `password123` | PLAYER | Mahmoud — football goalkeeper, team 1 |
+| `player5` | `password123` | PLAYER | Yousef — basketball point guard, team 2 |
+| `player6` | `password123` | PLAYER | Layla — tennis player, team 3 |
+
+### What you'll see in the database
+
+| Service | What's seeded |
+| :--- | :--- |
+| **user-management** | 17 user profiles across every role (1 admin, 1 sport mgr, 1 team mgr, 2 head coaches, 1 doctor, 1 physio, 1 fitness coach, 1 scout, 1 sponsor, 1 fan, 6 players) |
+| **player-management** | 6 Sports (one per `SportType`), 4 Teams (Cairo Eagles FC, Alex Stars BC, Cairo Tennis Club, Nile Volleyball), 6 Rosters (one per player), 6 PlayerContracts, 4 OuterTeams (Pyramids FC, Al Ahly, Zamalek SC, Tunis Hoops) |
+| **training-match** | 5 TrainingSessions (mix of SCHEDULED/ONGOING/COMPLETED), 3 Matches (1 FINISHED with score, 2 SCHEDULED) |
+| **medical-fitness** | 2 Injuries (player3 recovering, player5 recovered) each with a Diagnosis and a Treatment |
+| **reports-analytics** | 1 MatchAnalysis for the finished match, 2 PlayerAnalytics rows, 1 ScoutReport |
+| **notification-mail** | empty by design — it's event-driven; data appears as you use the API |
+
+### How it works (architecture)
+
+- **Keycloak users:** pre-imported from `keycloak/mscms-realm.json` with **fixed UUIDs** (e.g. admin = `00000000-0000-0000-0000-000000000001`). Keycloak runs with `--import-realm`, so the realm is created once on first start.
+- **DB seeding:** each service has a `bootstrap/*DataSeeder.java` class (a `CommandLineRunner` gated by `@ConditionalOnProperty("app.seed.enabled")`). It runs **after Hibernate creates the schema**, checks if data is already present, and if not, inserts demo rows. Restarts are a no-op.
+- **Cross-service references:** the seeders use the same fixed UUIDs from `mscms-realm.json` for the `keycloakId` column, and deterministic auto-generated IDs (e.g. `team 1` = Cairo Eagles FC) for `teamId`/`rosterId`/`contractId` foreign keys.
+
+### Why not `init-db.sql`?
+
+The Postgres init scripts only run once on volume creation — but at that point the **tables don't exist yet** (Hibernate creates them later from `@Entity` classes). Inserting into non-existent tables would fail. The `CommandLineRunner` approach runs *after* schema creation and also lets the user-management seeder coordinate UUIDs with Keycloak.
 
 ---
 
