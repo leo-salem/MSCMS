@@ -31,10 +31,6 @@ public class OutboxServiceImpl implements OutboxService {
                 .outerTeamId(match.getOuterTeamId())
                 .matchType(match.getMatchType() != null ? match.getMatchType().name() : null)
                 .venue(match.getVenue())
-                .competition(match.getCompetition())
-                .season(match.getSeason())
-                .sportType(match.getSportType() != null ? match.getSportType().name() : null)
-                .status(match.getStatus() != null ? match.getStatus().name() : null)
                 .kickoffTime(match.getKickoffTime())
                 .timestamp(Instant.now())
                 .build();
@@ -53,11 +49,6 @@ public class OutboxServiceImpl implements OutboxService {
                 .homeTeamScore(match.getHomeTeamScore())
                 .awayTeamScore(match.getAwayTeamScore())
                 .matchType(match.getMatchType() != null ? match.getMatchType().name() : null)
-                .competition(match.getCompetition())
-                .season(match.getSeason())
-                .possessionHome(null)
-                .shotsHome(null)
-                .shotsAway(null)
                 .timestamp(Instant.now())
                 .build();
 
