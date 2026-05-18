@@ -28,10 +28,26 @@ spring:
             uri: lb://NOTIFICATION-MAIL-SERVICE
             predicates:
               - Path=/notifications/**,/alerts/**,/messages/**
+          - id: ml-model-service
+            uri: lb://ML-MODEL-SERVICE
+            predicates:
+              - Path=/ml/**
           - id: reports-analytics-service
             uri: lb://REPORTS-ANALYTICS-SERVICE
             predicates:
               - Path=/match-analyses/**,/player-analytics/**,/scout-reports/**,/sponsor-offers/**,/team-analytics/**,/training-analytics/**
+          - id: wallet-service
+            uri: lb://WALLET-SERVICE
+            predicates:
+              - Path=/wallets/**
+          - id: payment-service
+            uri: lb://PAYMENT-SERVICE
+            predicates:
+              - Path=/payments/**,/webhooks/**
+          - id: store-service
+            uri: lb://STORE-SERVICE
+            predicates:
+              - Path=/products/**,/orders/**,/auctions/**,/bids/**,/donations/**
           - id: user-management-api-docs
             uri: lb://USER-MANAGEMENT-SERVICE
             predicates:
@@ -62,10 +78,34 @@ spring:
               - Path=/notification-mail/v3/api-docs/**
             filters:
               - StripPrefix=1
+          - id: ml-model-api-docs
+            uri: lb://ML-MODEL-SERVICE
+            predicates:
+              - Path=/ml-model/v3/api-docs/**
+            filters:
+              - StripPrefix=1
           - id: reports-analytics-api-docs
             uri: lb://REPORTS-ANALYTICS-SERVICE
             predicates:
               - Path=/reports-analytics/v3/api-docs/**
+            filters:
+              - StripPrefix=1
+          - id: wallet-api-docs
+            uri: lb://WALLET-SERVICE
+            predicates:
+              - Path=/wallet/v3/api-docs/**
+            filters:
+              - StripPrefix=1
+          - id: payment-api-docs
+            uri: lb://PAYMENT-SERVICE
+            predicates:
+              - Path=/payment/v3/api-docs/**
+            filters:
+              - StripPrefix=1
+          - id: store-api-docs
+            uri: lb://STORE-SERVICE
+            predicates:
+              - Path=/store/v3/api-docs/**
             filters:
               - StripPrefix=1
 
@@ -84,8 +124,16 @@ springdoc:
         url: /medical-fitness/v3/api-docs
       - name: Notification & Mail
         url: /notification-mail/v3/api-docs
+      - name: ML Model
+        url: /ml-model/v3/api-docs
       - name: Reports & Analytics
         url: /reports-analytics/v3/api-docs
+      - name: Wallet
+        url: /wallet/v3/api-docs
+      - name: Payment
+        url: /payment/v3/api-docs
+      - name: Store
+        url: /store/v3/api-docs
 
 keycloak:
   auth:
@@ -119,3 +167,83 @@ logging:
     org.springframework.security: DEBUG
     org.springframework.cloud.gateway: DEBUG
     org.springframework.web.servlet.DispatcherServlet: DEBUG
+
+# ============================================================
+# Rate limiting (Bucket4j, in-memory Caffeine cache)
+# Each filter has its own bucket; multiple filters can match the
+# same URL — the stricter limit kicks in first.
+# Response on 429: JSON body + X-Rate-Limit-Remaining header.
+# ============================================================
+bucket4j:
+  enabled: true
+  filter-config-caching-enabled: true
+  filters:
+    # 1) Auth brute-force protection — per IP, strict
+    - id: rl-auth
+      cache-name: rl-cache
+      filter-method: servlet
+      filter-order: 50
+      url: ^/auth/(login|signup|refresh)$
+      strategy: first
+      http-response-body: '{"success":false,"message":"Too many authentication attempts. Try again in a minute.","status":429}'
+      http-content-type: application/json
+      rate-limits:
+        - cache-key: "getRemoteAddr()"
+          bandwidths:
+            - id: rl-auth-bw
+              capacity: 10
+              time: 1
+              unit: minutes
+
+    # 2) Payment-provider webhooks (Stripe) — per IP, generous
+    - id: rl-webhooks
+      cache-name: rl-cache
+      filter-method: servlet
+      filter-order: 50
+      url: ^/webhooks/.*
+      strategy: first
+      http-response-body: '{"error":"rate_limited","status":429}'
+      http-content-type: application/json
+      rate-limits:
+        - cache-key: "getRemoteAddr()"
+          bandwidths:
+            - id: rl-webhook-bw
+              capacity: 200
+              time: 1
+              unit: minutes
+
+    # 3) Sensitive financial endpoints — per JWT, moderate
+    - id: rl-financial
+      cache-name: rl-cache
+      filter-method: servlet
+      filter-order: 50
+      url: ^/(payments/charge|auctions/[^/]+/bids|donations(/.*)?|orders(/.*)?)$
+      strategy: first
+      http-response-body: '{"success":false,"message":"Rate limit exceeded for this operation. Please slow down.","status":429}'
+      http-content-type: application/json
+      rate-limits:
+        - cache-key: "getHeader('Authorization')"
+          execute-condition: "getHeader('Authorization') != null"
+          bandwidths:
+            - id: rl-financial-bw
+              capacity: 30
+              time: 1
+              unit: minutes
+
+    # 4) Default — per JWT for authenticated, per IP for anonymous.
+    #    Excludes long-running SSE stream and Swagger/actuator paths.
+    - id: rl-default
+      cache-name: rl-cache
+      filter-method: servlet
+      filter-order: 100
+      url: ^/(?!actuator|v3/api-docs|swagger-ui|swagger-resources|webjars|api-docs|webhooks|.*/v3/api-docs|auctions/[^/]+/stream).+
+      strategy: first
+      http-response-body: '{"success":false,"message":"Rate limit exceeded. Please try again later.","status":429}'
+      http-content-type: application/json
+      rate-limits:
+        - cache-key: "getHeader('Authorization') != null ? getHeader('Authorization') : getRemoteAddr()"
+          bandwidths:
+            - id: rl-default-bw
+              capacity: 300
+              time: 1
+              unit: minutes

@@ -19,11 +19,15 @@ jobs:
           - eureka-server
           - gateway-service
           - medical-fitness-service
+          - ml-model-service
           - notification-mail-service
           - player-management-service
           - reports-analytics-service
           - training-match-service
           - user-management-service
+          - wallet-service
+          - payment-service
+          - store-service
 
     steps:
       - name: Checkout repository

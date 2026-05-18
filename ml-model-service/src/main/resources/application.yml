@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: ml-model-service
+  config:
+    import: ${SPRING_CONFIG_IMPORT:optional:configserver:http://localhost:8082}
+
+# Defaults when config server is unavailable (override in config-server/ml-model-service.yml)
+app:
+  ml:
+    kafka:
+      match-events-topic: match-events
+      player-events-topic: player-events
+      listeners-enabled: true

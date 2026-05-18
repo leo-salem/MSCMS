@@ -242,6 +242,40 @@ services:
     networks:
       - mscms-network
 
+  ml-model-service:
+    image: ${DOCKER_REGISTRY:-ghcr.io/tefaa1/mscms}/ml-model-service:${ML_MODEL_TAG:-latest}
+    container_name: ml-model-service
+    restart: on-failure
+    ports:
+      - "${ML_MODEL_PORT:-8088}:8088"
+    environment:
+      - SPRING_CONFIG_IMPORT=${SPRING_CONFIG_IMPORT:-optional:configserver:http://config-server:8082}
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-}
+      - DB_URI=${ML_DB_URI:-jdbc:postgresql://postgres:5432/mscms_ml}
+      - DB_USER=${DB_USER:-embarkx}
+      - DB_PASSWORD=${DB_PASSWORD:-embarkx}
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:-http://eureka-server:8761/eureka/}
+      - KAFKA_BOOTSTRAP_SERVERS=${KAFKA_BOOTSTRAP_SERVERS:-kafka:9092}
+      - KAFKA_CONSUMER_GROUP_ML=${KAFKA_CONSUMER_GROUP_ML:-ml-model-service}
+      - APP_ML_SEED_ENABLED=${APP_ML_SEED_ENABLED:-false}
+      - APP_ML_KAFKA_LISTENERS_ENABLED=${APP_ML_KAFKA_LISTENERS_ENABLED:-true}
+      - JAVA_OPTS=${JAVA_OPTS:--XX:MaxRAMPercentage=75.0 -XX:+ExitOnOutOfMemoryError}
+    depends_on:
+      config-server:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8088/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+    networks:
+      - mscms-network
+
 networks:
   mscms-network:
     driver: bridge
